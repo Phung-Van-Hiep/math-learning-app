@@ -1,33 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import LessonCard from '../components/LessonCard';
 
-const lessons = [
-  {
-    id: 1,
-    title: 'Phương trình bậc nhất',
-    grade: 8,
-    duration: 45,
-    rating: 4.8,
-    reviews: 124,
-    difficulty: 'Trung bình',
-    progress: 60,
-    thumbnail: 'https://via.placeholder.com/300',
-  },
-  {
-    id: 2,
-    title: 'Hệ phương trình bậc nhất hai ẩn',
-    grade: 9,
-    duration: 60,
-    rating: 4.9,
-    reviews: 250,
-    difficulty: 'Khó',
-    progress: 20,
-    thumbnail: 'https://via.placeholder.com/300',
-  },
-  // Add more lessons here
-];
-
 const HomePage = () => {
+  const [lessons, setLessons] = useState([]);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const response = await axios.get('/api/content/math');
+        setLessons(response.data);
+      } catch (error) {
+        console.error('Error fetching lessons:', error);
+      }
+    };
+
+    fetchLessons();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Danh sách bài học</h1>

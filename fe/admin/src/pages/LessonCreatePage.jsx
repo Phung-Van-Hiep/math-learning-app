@@ -5,10 +5,19 @@ import LessonForm from '../components/LessonForm';
 const LessonCreatePage = () => {
   const navigate = useNavigate();
 
-  const handleCreateLesson = (lesson) => {
-    // Handle lesson creation logic here
+  const handleCreateLesson = async (lesson) => {
     console.log('Creating lesson:', lesson);
-    navigate('/lessons');
+    try {
+      const token = localStorage.getItem('adminToken');
+      await axios.post('/api/admin/content', lesson, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      navigate('/lessons');
+    } catch (error) {
+      console.error('Error creating lesson:', error);
+    }
   };
 
   const handleCancel = () => {

@@ -8,5 +8,11 @@ export default defineConfig({
   root: path.resolve(__dirname),
   server: {
     port: 3001,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9532',
+        changeOrigin: true,
+      }
+    }
   }
 })
