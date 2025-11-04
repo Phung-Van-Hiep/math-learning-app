@@ -2,9 +2,9 @@ import React from 'react';
 
 const FeedbackPage = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <h1 className="text-3xl font-bold mb-4">Phản hồi</h1>
-      {/* Feedback form will be rendered here */}
+      {/* Feedback will be rendered here */}
     </div>
   );
 };

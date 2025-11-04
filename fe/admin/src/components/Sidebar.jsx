@@ -1,42 +1,41 @@
-import { NavLink } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function Sidebar() {
-  const menuItems = [
-    { path: '/', label: 'Dashboard', icon: '📊', exact: true },
-    { path: '/introduction', label: 'Giới thiệu', icon: '📖' },
-    { path: '/videos', label: 'Video', icon: '🎥' },
-    { path: '/content', label: 'Nội dung', icon: '📚' },
-    { path: '/interactive', label: 'Tương tác', icon: '🎯' },
-    { path: '/assessments', label: 'Kiểm tra', icon: '✍️' },
-    { path: '/feedback', label: 'Phản hồi', icon: '📧' },
-  ]
-
+const Sidebar = () => {
   return (
-    <aside className="w-64 bg-gray-800 text-white flex flex-col">
-      <div className="p-6 border-b border-gray-700">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
-        <p className="text-sm text-gray-400">Quản lý nội dung</p>
-      </div>
-
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.exact}
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? 'active' : ''}`
-            }
-          >
-            <span className="text-xl">{item.icon}</span>
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
+    <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
+      <h2 className="text-2xl font-bold mb-8">Admin Panel</h2>
+      <nav>
+        <ul>
+          <li className="mb-4">
+            <Link to="/" className="hover:text-gray-300">
+              Dashboard
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/lessons" className="hover:text-gray-300">
+              Bài học
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/statistics" className="hover:text-gray-300">
+              Thống kê
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/feedback" className="hover:text-gray-300">
+              Phản hồi
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/settings" className="hover:text-gray-300">
+              Cài đặt
+            </Link>
+          </li>
+        </ul>
       </nav>
-
-      <div className="p-4 border-t border-gray-700 text-sm text-gray-400">
-        <p>© 2024 THCS Như Quỳnh</p>
-      </div>
     </aside>
-  )
-}
+  );
+};
+
+export default Sidebar;

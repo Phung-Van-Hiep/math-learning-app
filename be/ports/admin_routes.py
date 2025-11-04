@@ -5,6 +5,8 @@ from datetime import timedelta
 from typing import List
 import shutil
 import os
+import uuid
+from pathlib import Path
 
 from services.database import get_db
 from services.models import (
@@ -15,6 +17,7 @@ from be.entities.auth_schemas import AdminLogin
 from be.entities.introduction_schemas import IntroductionBase, IntroductionResponse
 from be.entities.video_schemas import VideoCreate, VideoResponse
 from be.entities.content_schemas import ContentCreate, ContentResponse
+from be.entities.interactive_schemas import InteractiveCreate, InteractiveResponse
 from be.entities.assessment_schemas import AssessmentCreate, AssessmentResponse
 from be.entities.feedback_schemas import FeedbackResponse
 from be.entities.dashboard_schemas import DashboardStats
@@ -60,6 +63,53 @@ async def admin_logout(current_admin: Admin = Depends(get_current_admin)):
 async def verify_admin_token(current_admin: Admin = Depends(get_current_admin)):
     """Verify admin token"""
     return {"admin": {"id": current_admin.id, "name": current_admin.name, "email": current_admin.email}}
+
+# ==================== FILE UPLOAD ====================
+@router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    current_admin: Admin = Depends(get_current_admin)
+):
+    """Upload file and return URL"""
+    # Validate file size (max 50MB)
+    MAX_FILE_SIZE = 50 * 1024 * 1024
+
+    # Read file content
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large (max 50MB)")
+
+    # Validate file extension
+    allowed_extensions = {'.ggb', '.xmind', '.mm', '.pdf', '.png', '.jpg', '.jpeg', '.html', '.zip', '.gif', '.svg'}
+    file_ext = Path(file.filename).suffix.lower()
+
+    if file_ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type not allowed. Allowed: {', '.join(allowed_extensions)}"
+        )
+
+    # Generate unique filename
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    upload_dir = Path("uploads/interactive")
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    file_path = upload_dir / unique_filename
+
+    # Save file
+    try:
+        with open(file_path, "wb") as f:
+            f.write(contents)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+
+    # Return URL
+    file_url = f"/uploads/interactive/{unique_filename}"
+    return {
+        "url": file_url,
+        "filename": file.filename,
+        "size": len(contents),
+        "type": file.content_type
+    }
 
 # ==================== DASHBOARD ====================
 @router.get("/dashboard/stats", response_model=DashboardStats)
@@ -225,6 +275,62 @@ async def delete_content(
     db.delete(content)
     db.commit()
     return {"message": "Content deleted successfully"}
+
+# ==================== INTERACTIVE ====================
+@router.get("/interactive", response_model=List[InteractiveResponse])
+async def get_all_interactive_admin(
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get all interactive tools (admin)"""
+    return db.query(Interactive).order_by(Interactive.order).all()
+
+@router.post("/interactive", response_model=InteractiveResponse)
+async def create_interactive(
+    interactive_data: InteractiveCreate,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Create new interactive tool"""
+    interactive = Interactive(**interactive_data.dict())
+    db.add(interactive)
+    db.commit()
+    db.refresh(interactive)
+    return interactive
+
+@router.put("/interactive/{interactive_id}", response_model=InteractiveResponse)
+async def update_interactive(
+    interactive_id: int,
+    interactive_data: InteractiveCreate,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Update interactive tool"""
+    interactive = db.query(Interactive).filter(Interactive.id == interactive_id).first()
+    if not interactive:
+        raise HTTPException(status_code=404, detail="Interactive tool not found")
+
+    for key, value in interactive_data.dict(exclude_unset=True).items():
+        setattr(interactive, key, value)
+
+    db.commit()
+    db.refresh(interactive)
+    return interactive
+
+@router.delete("/interactive/{interactive_id}")
+async def delete_interactive(
+    interactive_id: int,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Delete interactive tool"""
+    interactive = db.query(Interactive).filter(Interactive.id == interactive_id).first()
+    if not interactive:
+        raise HTTPException(status_code=404, detail="Interactive tool not found")
+
+    db.delete(interactive)
+    db.commit()
+    return {"message": "Interactive tool deleted successfully"}
 
 # ==================== ASSESSMENTS ====================
 @router.get("/assessments", response_model=List[AssessmentResponse])

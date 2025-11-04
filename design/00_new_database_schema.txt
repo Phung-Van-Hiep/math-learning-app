@@ -1,0 +1,365 @@
+================================================================================
+                    NEW DATABASE SCHEMA - LESSON-BASED SYSTEM
+================================================================================
+
+MỤC ĐÍCH: Hệ thống quản lý nhiều bài học với nội dung linh hoạt và có thể sắp xếp
+
+================================================================================
+                        VẤN ĐỀ CỦA HỆ THỐNG HIỆN TẠI
+================================================================================
+
+HIỆN TẠI:
+- Introduction, Video, Content, Interactive, Assessment là các bảng độc lập
+- Không có khái niệm "bài học" (Lesson)
+- Giáo viên chỉ có thể tạo một bộ nội dung duy nhất
+- Học sinh không thể chọn bài học cụ thể
+- Không thể sắp xếp thứ tự nội dung linh hoạt
+
+HỆ QUẢ:
+- Không thể có nhiều bài học khác nhau
+- Nội dung giới thiệu, video, bài tập không liên quan đến nhau
+- Học sinh không có trải nghiệm học tập rõ ràng theo từng bài
+
+================================================================================
+                        GIẢI PHÁP: HỆ THỐNG MỚI
+================================================================================
+
+THAY ĐỔI CHÍNH:
+
+1. THÊM BẢNG LESSONS (Bài học)
+   - Mỗi bài học có: tiêu đề, mô tả, mục tiêu, cấp độ
+   - Bài học là đơn vị học tập chính
+
+2. THÊM BẢNG LESSON_CONTENT_BLOCKS (Khối nội dung bài học)
+   - Kết nối lesson với các loại nội dung
+   - Cho phép sắp xếp thứ tự hiển thị
+   - Linh hoạt trong việc tổ chức nội dung
+
+3. CẬP NHẬT CÁC BẢNG HIỆN TẠI
+   - Thêm lesson_id vào Introduction, Video, Content, Interactive
+   - Cho phép mỗi bài học có nhiều video, nhiều phần nội dung
+
+================================================================================
+                        CHI TIẾT DATABASE SCHEMA MỚI
+================================================================================
+
+1. LESSONS TABLE (Bảng bài học - MỚI)
+┌─────────────────────────────────────────────────────────────────────┐
+│ lessons                                                              │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ title               │ VARCHAR(200)     │ Tên bài học                │
+│ slug                │ VARCHAR(250)     │ URL-friendly slug          │
+│ description         │ TEXT             │ Mô tả bài học              │
+│ thumbnail           │ VARCHAR(500)     │ Ảnh đại diện bài học       │
+│ grade_level         │ VARCHAR(10)      │ Lớp (6, 7, 8, 9)           │
+│ subject_area        │ VARCHAR(100)     │ Chủ đề (Số học, Hình học)  │
+│ difficulty          │ VARCHAR(20)      │ easy, medium, hard         │
+│ estimated_duration  │ INTEGER          │ Thời gian học (phút)       │
+│ objectives          │ JSON             │ Mục tiêu học tập           │
+│ prerequisites       │ JSON             │ Kiến thức tiên quyết       │
+│ order_index         │ INTEGER          │ Thứ tự hiển thị            │
+│ is_published        │ BOOLEAN          │ Đã xuất bản?               │
+│ view_count          │ INTEGER          │ Lượt xem                   │
+│ created_by          │ INTEGER (FK)     │ Admin ID                   │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+│ published_at        │ DATETIME         │ Ngày xuất bản              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+Objectives JSON structure:
+{
+  "knowledge": ["Hiểu khái niệm...", "Nắm được công thức..."],
+  "skills": ["Vận dụng được...", "Giải được bài toán..."],
+  "qualities": ["Tính cẩn thận", "Tư duy logic"],
+  "competencies": ["Năng lực giải quyết vấn đề"]
+}
+
+2. LESSON_CONTENT_BLOCKS TABLE (Khối nội dung - MỚI)
+┌─────────────────────────────────────────────────────────────────────┐
+│ lesson_content_blocks                                                │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học                 │
+│ content_type        │ VARCHAR(50)      │ Loại nội dung              │
+│ content_id          │ INTEGER          │ ID nội dung tương ứng      │
+│ block_order         │ INTEGER          │ Thứ tự hiển thị            │
+│ is_visible          │ BOOLEAN          │ Hiển thị hay ẩn            │
+│ settings            │ JSON             │ Cài đặt bổ sung            │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+Content Types:
+- 'introduction'  → references introduction table
+- 'video'         → references videos table
+- 'content'       → references contents table
+- 'interactive'   → references interactive_tools table
+- 'assessment'    → references assessments table
+
+Settings JSON structure (ví dụ):
+{
+  "full_width": true,
+  "background_color": "#f5f5f5",
+  "custom_css_class": "highlight-section"
+}
+
+3. INTRODUCTION TABLE (Cập nhật)
+┌─────────────────────────────────────────────────────────────────────┐
+│ introduction                                                         │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học [MỚI]           │
+│ title               │ VARCHAR(200)     │ Tiêu đề giới thiệu [MỚI]   │
+│ content             │ TEXT             │ Nội dung giới thiệu [MỚI]  │
+│ teacher_info        │ JSON             │ Thông tin giáo viên [MỚI]  │
+│ key_points          │ JSON             │ Điểm nhấn chính [MỚI]      │
+│ duration            │ VARCHAR(50)      │ Thời lượng                 │
+│ references          │ JSON             │ Tài liệu tham khảo         │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+Teacher Info JSON:
+{
+  "name": "Thầy Nguyễn Văn A",
+  "title": "Giáo viên Toán",
+  "email": "teacher@school.edu.vn",
+  "image": "/uploads/teacher.jpg"
+}
+
+4. VIDEOS TABLE (Cập nhật)
+┌─────────────────────────────────────────────────────────────────────┐
+│ videos                                                               │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học [MỚI]           │
+│ title               │ VARCHAR(200)     │ Tiêu đề video              │
+│ description         │ TEXT             │ Mô tả                      │
+│ video_type          │ VARCHAR(20)      │ youtube, drive, direct     │
+│ video_url           │ VARCHAR(500)     │ URL video                  │
+│ thumbnail           │ VARCHAR(500)     │ Ảnh thumbnail [MỚI]        │
+│ duration            │ INTEGER          │ Độ dài (giây)              │
+│ timeline            │ JSON             │ Mốc thời gian              │
+│ key_points          │ JSON             │ Điểm chính                 │
+│ attachments         │ JSON             │ Tài liệu đính kèm          │
+│ views               │ INTEGER          │ Lượt xem                   │
+│ order_index         │ INTEGER          │ Thứ tự trong bài [MỚI]     │
+│ is_published        │ BOOLEAN          │ Đã xuất bản?               │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+5. CONTENTS TABLE (Cập nhật)
+┌─────────────────────────────────────────────────────────────────────┐
+│ contents                                                             │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học [MỚI]           │
+│ section_type        │ VARCHAR(50)      │ theory, example, exercise  │
+│ title               │ VARCHAR(200)     │ Tiêu đề phần               │
+│ content_html        │ TEXT             │ Nội dung HTML              │
+│ order_index         │ INTEGER          │ Thứ tự                     │
+│ geogebra_embed      │ TEXT             │ Mã nhúng GeoGebra          │
+│ attachments         │ JSON             │ File đính kèm [MỚI]        │
+│ is_published        │ BOOLEAN          │ Đã xuất bản?               │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+6. INTERACTIVE_TOOLS TABLE (Cập nhật)
+┌─────────────────────────────────────────────────────────────────────┐
+│ interactive_tools                                                    │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học [MỚI]           │
+│ tool_type           │ VARCHAR(50)      │ geogebra, maple, mindmap   │
+│ title               │ VARCHAR(200)     │ Tiêu đề công cụ            │
+│ description         │ TEXT             │ Mô tả                      │
+│ embed_code          │ TEXT             │ Mã nhúng                   │
+│ file_url            │ VARCHAR(500)     │ URL file                   │
+│ thumbnail           │ VARCHAR(500)     │ Ảnh thumbnail [MỚI]        │
+│ order_index         │ INTEGER          │ Thứ tự                     │
+│ is_published        │ BOOLEAN          │ Đã xuất bản?               │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+7. ASSESSMENTS TABLE (Cập nhật)
+┌─────────────────────────────────────────────────────────────────────┐
+│ assessments                                                          │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học [MỚI]           │
+│ title               │ VARCHAR(200)     │ Tiêu đề bài kiểm tra       │
+│ description         │ TEXT             │ Mô tả                      │
+│ assessment_type     │ VARCHAR(50)      │ google_form, quiz, custom  │
+│ embed_url           │ VARCHAR(500)     │ URL nhúng                  │
+│ questions           │ JSON             │ Câu hỏi (nếu custom) [MỚI] │
+│ instructions        │ TEXT             │ Hướng dẫn làm bài          │
+│ grading_scale       │ JSON             │ Thang điểm                 │
+│ time_limit          │ INTEGER          │ Giới hạn thời gian (phút)  │
+│ attempts_allowed    │ INTEGER          │ Số lần làm bài [MỚI]       │
+│ show_answers        │ BOOLEAN          │ Hiện đáp án? [MỚI]         │
+│ is_published        │ BOOLEAN          │ Đã xuất bản?               │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+│ updated_at          │ DATETIME         │ Ngày cập nhật              │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+8. LESSON_PROGRESS TABLE (Theo dõi tiến độ học - MỚI)
+┌─────────────────────────────────────────────────────────────────────┐
+│ lesson_progress                                                      │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ student_id          │ INTEGER (FK)     │ ID học sinh                │
+│ lesson_id           │ INTEGER (FK)     │ ID bài học                 │
+│ progress_percent    │ INTEGER          │ % hoàn thành               │
+│ completed_blocks    │ JSON             │ Các block đã hoàn thành    │
+│ time_spent          │ INTEGER          │ Thời gian học (giây)       │
+│ last_position       │ VARCHAR(100)     │ Vị trí học cuối cùng       │
+│ started_at          │ DATETIME         │ Bắt đầu học                │
+│ last_accessed       │ DATETIME         │ Truy cập lần cuối          │
+│ completed_at        │ DATETIME         │ Hoàn thành                 │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+9. LESSON_TAGS TABLE (Tag bài học - MỚI, OPTIONAL)
+┌─────────────────────────────────────────────────────────────────────┐
+│ lesson_tags                                                          │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ id                  │ INTEGER          │ Primary key                │
+│ name                │ VARCHAR(50)      │ Tên tag                    │
+│ slug                │ VARCHAR(50)      │ URL slug                   │
+│ color               │ VARCHAR(7)       │ Màu tag (#FF5733)          │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+└─────────────────────┴──────────────────┴────────────────────────────┘
+
+10. LESSON_TAG_MAPPING TABLE (Liên kết lesson-tag - MỚI, OPTIONAL)
+┌─────────────────────────────────────────────────────────────────────┐
+│ lesson_tag_mapping                                                   │
+├─────────────────────┬──────────────────┬────────────────────────────┤
+│ Field               │ Type             │ Description                │
+├─────────────────────┼──────────────────┼────────────────────────────┤
+│ lesson_id           │ INTEGER (FK)     │ ID bài học                 │
+│ tag_id              │ INTEGER (FK)     │ ID tag                     │
+│ created_at          │ DATETIME         │ Ngày tạo                   │
+├─────────────────────┴──────────────────┴────────────────────────────┤
+│ PRIMARY KEY (lesson_id, tag_id)                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                        RELATIONSHIPS (MỐI QUAN HỆ)
+================================================================================
+
+1. lessons (1) ←→ (many) lesson_content_blocks
+   - Một bài học có nhiều khối nội dung
+
+2. lessons (1) ←→ (many) introduction
+   - Một bài học có một giới thiệu
+
+3. lessons (1) ←→ (many) videos
+   - Một bài học có nhiều video
+
+4. lessons (1) ←→ (many) contents
+   - Một bài học có nhiều phần nội dung
+
+5. lessons (1) ←→ (many) interactive_tools
+   - Một bài học có nhiều công cụ tương tác
+
+6. lessons (1) ←→ (many) assessments
+   - Một bài học có nhiều bài kiểm tra
+
+7. students (1) ←→ (many) lesson_progress
+   - Một học sinh có nhiều tiến độ học (mỗi bài một record)
+
+8. lessons (many) ←→ (many) lesson_tags
+   - Nhiều bài học có nhiều tag (many-to-many)
+
+================================================================================
+                        MIGRATION STRATEGY
+================================================================================
+
+BƯỚC 1: Tạo bảng mới
+- lessons
+- lesson_content_blocks
+- lesson_progress
+- lesson_tags (optional)
+- lesson_tag_mapping (optional)
+
+BƯỚC 2: Cập nhật bảng hiện có
+- ALTER TABLE introduction ADD COLUMN lesson_id INTEGER
+- ALTER TABLE videos ADD COLUMN lesson_id INTEGER
+- ALTER TABLE contents ADD COLUMN lesson_id INTEGER
+- ALTER TABLE interactive_tools ADD COLUMN lesson_id INTEGER
+- ALTER TABLE assessments ADD COLUMN lesson_id INTEGER
+
+BƯỚC 3: Di chuyển dữ liệu
+- Tạo một lesson mặc định "Bài học mẫu"
+- Gán tất cả dữ liệu hiện tại vào lesson này
+- Tạo lesson_content_blocks cho dữ liệu hiện có
+
+BƯỚC 4: Cập nhật API
+- Tạo CRUD endpoints cho lessons
+- Cập nhật các endpoints hiện có để hỗ trợ lesson_id
+- Tạo endpoint sắp xếp nội dung
+
+================================================================================
+                        VÍ DỤ DỮ LIỆU
+================================================================================
+
+LESSON 1: "Phương trình bậc nhất một ẩn"
+├─ Introduction: Giới thiệu chung về phương trình
+├─ Video 1: "Khái niệm phương trình bậc nhất"
+├─ Content 1: Lý thuyết phương trình bậc nhất
+├─ Video 2: "Ví dụ giải phương trình"
+├─ Interactive 1: GeoGebra - Biểu diễn phương trình
+├─ Content 2: Bài tập SGK
+├─ Assessment 1: Kiểm tra 15 phút
+
+LESSON 2: "Bất phương trình bậc nhất một ẩn"
+├─ Introduction: Giới thiệu bất phương trình
+├─ Video 1: "Khái niệm bất phương trình"
+├─ Content 1: Lý thuyết
+├─ Content 2: Bài tập vận dụng
+├─ Assessment 1: Trắc nghiệm
+
+================================================================================
+                        LỢI ÍCH HỆ THỐNG MỚI
+================================================================================
+
+CHO GIÁO VIÊN:
+✓ Tạo được nhiều bài học độc lập
+✓ Sắp xếp nội dung linh hoạt theo ý muốn
+✓ Quản lý từng bài học riêng biệt
+✓ Theo dõi tiến độ học sinh theo từng bài
+
+CHO HỌC SINH:
+✓ Xem danh sách bài học rõ ràng
+✓ Chọn bài học muốn học
+✓ Xem nội dung được sắp xếp logic
+✓ Theo dõi tiến độ học tập của mình
+
+HỆ THỐNG:
+✓ Dễ mở rộng thêm loại nội dung mới
+✓ Dữ liệu có cấu trúc rõ ràng
+✓ Dễ bảo trì và phát triển
+✓ Hỗ trợ tốt cho tương lai
+
+================================================================================

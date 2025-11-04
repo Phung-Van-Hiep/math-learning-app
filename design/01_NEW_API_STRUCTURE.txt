@@ -1,0 +1,686 @@
+================================================================================
+                    NEW API STRUCTURE - LESSON-BASED SYSTEM
+================================================================================
+
+MỤC ĐÍCH: Định nghĩa các API endpoints cho hệ thống bài học mới
+
+BASE URL: /api/v1
+
+================================================================================
+                        API ENDPOINTS OVERVIEW
+================================================================================
+
+LESSONS:
+- GET    /lessons                          - List all lessons (with filters)
+- GET    /lessons/:id                      - Get lesson details
+- GET    /lessons/:id/content              - Get lesson with all content blocks
+- POST   /lessons                          - Create new lesson (admin)
+- PUT    /lessons/:id                      - Update lesson (admin)
+- DELETE /lessons/:id                      - Delete lesson (admin)
+- PATCH  /lessons/:id/publish              - Publish/unpublish lesson (admin)
+- POST   /lessons/:id/duplicate            - Duplicate lesson (admin)
+
+LESSON CONTENT BLOCKS:
+- GET    /lessons/:id/blocks               - Get all content blocks for lesson
+- POST   /lessons/:id/blocks               - Add content block to lesson (admin)
+- PUT    /lessons/:id/blocks/:blockId      - Update content block (admin)
+- DELETE /lessons/:id/blocks/:blockId      - Delete content block (admin)
+- PATCH  /lessons/:id/blocks/reorder       - Reorder content blocks (admin)
+- PATCH  /lessons/:id/blocks/:blockId/toggle - Toggle visibility (admin)
+
+INTRODUCTION:
+- GET    /introductions/:id                - Get introduction details
+- POST   /introductions                    - Create introduction (admin)
+- PUT    /introductions/:id                - Update introduction (admin)
+- DELETE /introductions/:id                - Delete introduction (admin)
+
+VIDEOS:
+- GET    /videos/:id                       - Get video details
+- POST   /videos                           - Create video (admin)
+- PUT    /videos/:id                       - Update video (admin)
+- DELETE /videos/:id                       - Delete video (admin)
+- PATCH  /videos/:id/increment-views       - Increment view count
+
+CONTENTS:
+- GET    /contents/:id                     - Get content details
+- POST   /contents                         - Create content (admin)
+- PUT    /contents/:id                     - Update content (admin)
+- DELETE /contents/:id                     - Delete content (admin)
+
+INTERACTIVE TOOLS:
+- GET    /interactive/:id                  - Get interactive tool details
+- POST   /interactive                      - Create tool (admin)
+- PUT    /interactive/:id                  - Update tool (admin)
+- DELETE /interactive/:id                  - Delete tool (admin)
+
+ASSESSMENTS:
+- GET    /assessments/:id                  - Get assessment details
+- POST   /assessments                      - Create assessment (admin)
+- PUT    /assessments/:id                  - Update assessment (admin)
+- DELETE /assessments/:id                  - Delete assessment (admin)
+- GET    /assessments/:id/results          - Get results for assessment (admin)
+
+STUDENT PROGRESS:
+- GET    /students/:id/progress            - Get all progress for student
+- GET    /students/:id/progress/:lessonId  - Get progress for specific lesson
+- POST   /students/:id/progress/:lessonId  - Create/update progress
+- PATCH  /students/:id/progress/:lessonId/block - Mark block as complete
+
+TEST RESULTS:
+- GET    /students/:id/results             - Get all test results
+- POST   /test-results                     - Submit test result
+- GET    /test-results/:id                 - Get specific result
+
+FEEDBACK:
+- GET    /feedback                         - Get all feedback (admin)
+- GET    /feedback/:id                     - Get specific feedback
+- POST   /feedback                         - Submit feedback (student)
+- PUT    /feedback/:id/reply               - Reply to feedback (admin)
+- PATCH  /feedback/:id/read                - Mark as read (admin)
+
+STATISTICS (Admin):
+- GET    /stats/overview                   - Overall statistics
+- GET    /stats/lessons/:id                - Statistics for specific lesson
+- GET    /stats/students/:id               - Statistics for specific student
+
+================================================================================
+                        DETAILED API SPECIFICATIONS
+================================================================================
+
+1. LESSONS API
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GET /api/v1/lessons
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get list of all lessons with filters
+
+   Query Parameters:
+   - page: int (default: 1)
+   - limit: int (default: 20)
+   - grade_level: string (6, 7, 8, 9)
+   - is_published: boolean
+   - subject_area: string
+   - difficulty: string (easy, medium, hard)
+   - sort_by: string (created_at, title, view_count, rating)
+   - order: string (asc, desc)
+   - search: string (search in title and description)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "lessons": [
+         {
+           "id": 1,
+           "title": "Phương trình bậc nhất một ẩn",
+           "slug": "phuong-trinh-bac-nhat-mot-an",
+           "description": "Học về phương trình bậc nhất...",
+           "thumbnail": "/uploads/lessons/thumb1.jpg",
+           "grade_level": "8",
+           "subject_area": "Đại số",
+           "difficulty": "medium",
+           "estimated_duration": 45,
+           "is_published": true,
+           "view_count": 245,
+           "content_block_count": 7,
+           "rating": {
+             "average": 4.8,
+             "count": 124
+           },
+           "created_at": "2024-01-15T10:30:00Z",
+           "updated_at": "2024-01-16T14:20:00Z"
+         },
+         ...
+       ],
+       "pagination": {
+         "page": 1,
+         "limit": 20,
+         "total": 12,
+         "total_pages": 1
+       }
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GET /api/v1/lessons/:id
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get detailed information about a specific lesson
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "id": 1,
+       "title": "Phương trình bậc nhất một ẩn",
+       "slug": "phuong-trinh-bac-nhat-mot-an",
+       "description": "Học về phương trình bậc nhất một ẩn...",
+       "thumbnail": "/uploads/lessons/thumb1.jpg",
+       "grade_level": "8",
+       "subject_area": "Đại số",
+       "difficulty": "medium",
+       "estimated_duration": 45,
+       "objectives": {
+         "knowledge": ["Hiểu khái niệm...", "Nắm được..."],
+         "skills": ["Giải được...", "Vận dụng..."],
+         "qualities": ["Tính cẩn thận"],
+         "competencies": ["Năng lực giải quyết vấn đề"]
+       },
+       "prerequisites": ["Phép tính cơ bản", "Biểu thức đại số"],
+       "is_published": true,
+       "view_count": 245,
+       "order_index": 1,
+       "created_by": 1,
+       "created_at": "2024-01-15T10:30:00Z",
+       "updated_at": "2024-01-16T14:20:00Z",
+       "published_at": "2024-01-15T11:00:00Z",
+       "rating": {
+         "average": 4.8,
+         "count": 124
+       }
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GET /api/v1/lessons/:id/content
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get lesson with all content blocks (for lesson view page)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "lesson": {
+         "id": 1,
+         "title": "Phương trình bậc nhất một ẩn",
+         "slug": "phuong-trinh-bac-nhat-mot-an",
+         ...
+       },
+       "content_blocks": [
+         {
+           "id": 1,
+           "lesson_id": 1,
+           "content_type": "introduction",
+           "content_id": 5,
+           "block_order": 1,
+           "is_visible": true,
+           "content_data": {
+             "id": 5,
+             "title": "Giới thiệu bài học",
+             "content": "Xin chào các em...",
+             "teacher_info": {...},
+             "key_points": [...],
+             "duration": "45 phút",
+             "references": [...]
+           }
+         },
+         {
+           "id": 2,
+           "lesson_id": 1,
+           "content_type": "video",
+           "content_id": 12,
+           "block_order": 2,
+           "is_visible": true,
+           "content_data": {
+             "id": 12,
+             "title": "Khái niệm phương trình",
+             "video_type": "youtube",
+             "video_url": "https://youtube.com/...",
+             "duration": 930,
+             "timeline": [...],
+             "key_points": [...],
+             "views": 245
+           }
+         },
+         ...
+       ]
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   POST /api/v1/lessons
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Create a new lesson (admin only)
+   Auth: Bearer token
+
+   Request Body:
+   {
+     "title": "Phương trình bậc nhất một ẩn",
+     "slug": "phuong-trinh-bac-nhat-mot-an", // optional, auto-generate
+     "description": "Học về phương trình...",
+     "thumbnail": "/uploads/lessons/thumb1.jpg", // optional
+     "grade_level": "8",
+     "subject_area": "Đại số",
+     "difficulty": "medium",
+     "estimated_duration": 45,
+     "objectives": {
+       "knowledge": ["Item 1", "Item 2"],
+       "skills": ["Item 1"],
+       "qualities": [],
+       "competencies": []
+     },
+     "prerequisites": ["Prerequisite 1"],
+     "is_published": false
+   }
+
+   Response: 201 Created
+   {
+     "success": true,
+     "data": {
+       "id": 1,
+       "title": "Phương trình bậc nhất một ẩn",
+       ...
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PUT /api/v1/lessons/:id
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Update lesson information (admin only)
+   Auth: Bearer token
+
+   Request Body: (same as POST, all fields optional)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": { /* updated lesson */ }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DELETE /api/v1/lessons/:id
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Delete a lesson (admin only)
+   Auth: Bearer token
+
+   Response: 200 OK
+   {
+     "success": true,
+     "message": "Lesson deleted successfully"
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PATCH /api/v1/lessons/:id/publish
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Toggle publish status (admin only)
+   Auth: Bearer token
+
+   Request Body:
+   {
+     "is_published": true
+   }
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": { /* updated lesson */ }
+   }
+
+2. LESSON CONTENT BLOCKS API
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GET /api/v1/lessons/:id/blocks
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get all content blocks for a lesson (ordered)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": [
+       {
+         "id": 1,
+         "lesson_id": 1,
+         "content_type": "introduction",
+         "content_id": 5,
+         "block_order": 1,
+         "is_visible": true,
+         "settings": {},
+         "content_summary": {
+           "title": "Giới thiệu bài học",
+           "type_label": "Giới thiệu"
+         }
+       },
+       ...
+     ]
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   POST /api/v1/lessons/:id/blocks
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Add a content block to a lesson (admin only)
+   Auth: Bearer token
+
+   Request Body:
+   {
+     "content_type": "video",  // introduction, video, content, interactive, assessment
+     "content_id": 12,
+     "block_order": 2,  // optional, defaults to end
+     "is_visible": true,
+     "settings": {}  // optional
+   }
+
+   Response: 201 Created
+   {
+     "success": true,
+     "data": { /* new content block */ }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PATCH /api/v1/lessons/:id/blocks/reorder
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Reorder content blocks (drag & drop) (admin only)
+   Auth: Bearer token
+
+   Request Body:
+   {
+     "blocks": [
+       { "id": 1, "block_order": 1 },
+       { "id": 3, "block_order": 2 },
+       { "id": 2, "block_order": 3 },
+       ...
+     ]
+   }
+
+   Response: 200 OK
+   {
+     "success": true,
+     "message": "Blocks reordered successfully"
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PATCH /api/v1/lessons/:id/blocks/:blockId/toggle
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Toggle visibility of a content block (admin only)
+   Auth: Bearer token
+
+   Request Body:
+   {
+     "is_visible": false
+   }
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": { /* updated block */ }
+   }
+
+3. STUDENT PROGRESS API
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GET /api/v1/students/:id/progress/:lessonId
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get progress for a specific lesson
+   Auth: Bearer token (student or admin)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "id": 1,
+       "student_id": 10,
+       "lesson_id": 1,
+       "progress_percent": 60,
+       "completed_blocks": [1, 2, 3, 4, 5],  // Block IDs
+       "time_spent": 1620,  // seconds
+       "last_position": "block_3",
+       "started_at": "2024-01-15T10:00:00Z",
+       "last_accessed": "2024-01-16T14:30:00Z",
+       "completed_at": null
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   POST /api/v1/students/:id/progress/:lessonId
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Create or update progress
+   Auth: Bearer token (student)
+
+   Request Body:
+   {
+     "completed_blocks": [1, 2, 3],
+     "time_spent": 900,
+     "last_position": "block_3"
+   }
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": { /* updated progress */ }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PATCH /api/v1/students/:id/progress/:lessonId/block
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Mark a specific block as complete
+   Auth: Bearer token (student)
+
+   Request Body:
+   {
+     "block_id": 3
+   }
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": { /* updated progress */ }
+   }
+
+4. STATISTICS API (Admin)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   GET /api/v1/stats/overview
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get overall statistics (for dashboard)
+   Auth: Bearer token (admin)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "total_lessons": 12,
+       "published_lessons": 8,
+       "draft_lessons": 3,
+       "hidden_lessons": 1,
+       "total_students": 156,
+       "active_students": 98,
+       "total_views": 3245,
+       "total_feedback": 23,
+       "unread_feedback": 5
+     }
+   }
+
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GET /api/v1/stats/lessons/:id
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Description: Get statistics for a specific lesson
+   Auth: Bearer token (admin)
+
+   Response: 200 OK
+   {
+     "success": true,
+     "data": {
+       "lesson_id": 1,
+       "view_count": 245,
+       "unique_students": 89,
+       "completion_rate": 42,  // percentage
+       "average_time_spent": 38,  // minutes
+       "rating": {
+         "average": 4.8,
+         "count": 124
+       },
+       "block_stats": [
+         {
+           "block_id": 1,
+           "type": "introduction",
+           "completion_count": 89,
+           "average_time": 5
+         },
+         ...
+       ]
+     }
+   }
+
+================================================================================
+                        ERROR RESPONSES
+================================================================================
+
+All errors follow this format:
+
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": {}  // optional, additional error info
+  }
+}
+
+ERROR CODES:
+- UNAUTHORIZED: 401 - Not authenticated
+- FORBIDDEN: 403 - Not authorized
+- NOT_FOUND: 404 - Resource not found
+- VALIDATION_ERROR: 400 - Invalid input
+- SERVER_ERROR: 500 - Internal server error
+
+Examples:
+
+{
+  "success": false,
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Lesson with id 999 not found"
+  }
+}
+
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "title": "Title is required",
+      "grade_level": "Must be one of: 6, 7, 8, 9"
+    }
+  }
+}
+
+================================================================================
+                        AUTHENTICATION
+================================================================================
+
+All admin endpoints require authentication:
+Header: Authorization: Bearer <token>
+
+Student endpoints require student auth:
+Header: Authorization: Bearer <token>
+
+Public endpoints (no auth required):
+- GET /lessons (published only)
+- GET /lessons/:id (published only)
+- GET /lessons/:id/content (published only)
+
+================================================================================
+                        PAGINATION
+================================================================================
+
+All list endpoints support pagination:
+
+Query parameters:
+- page: int (default: 1)
+- limit: int (default: 20, max: 100)
+
+Response includes:
+{
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 125,
+    "total_pages": 7,
+    "has_prev": false,
+    "has_next": true
+  }
+}
+
+================================================================================
+                        FILTERING & SORTING
+================================================================================
+
+List endpoints support filtering and sorting:
+
+Example:
+GET /api/v1/lessons?grade_level=8&is_published=true&sort_by=created_at&order=desc
+
+Common filters:
+- grade_level: string
+- is_published: boolean
+- difficulty: string
+- search: string
+
+Common sort fields:
+- created_at
+- updated_at
+- title
+- view_count
+- rating
+
+================================================================================
+                        VERSIONING
+================================================================================
+
+API version is included in URL: /api/v1/
+
+Future versions will be: /api/v2/, etc.
+
+================================================================================
+                        RATE LIMITING
+================================================================================
+
+Rate limits (per IP):
+- Public endpoints: 100 requests/minute
+- Authenticated endpoints: 300 requests/minute
+- Admin endpoints: 500 requests/minute
+
+Response headers:
+- X-RateLimit-Limit: 100
+- X-RateLimit-Remaining: 95
+- X-RateLimit-Reset: 1234567890
+
+If exceeded:
+Status: 429 Too Many Requests
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Too many requests, please try again later"
+  }
+}
+
+================================================================================
+                        CORS
+================================================================================
+
+CORS headers:
+Access-Control-Allow-Origin: https://yourdomain.com
+Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Max-Age: 3600
+
+================================================================================
+                        WEBHOOKS (Future Enhancement)
+================================================================================
+
+Webhooks for events:
+- lesson.published
+- lesson.completed (by student)
+- assessment.submitted
+- feedback.created
+
+Format:
+POST to configured URL with payload:
+{
+  "event": "lesson.published",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": { /* event-specific data */ }
+}
+
+================================================================================
