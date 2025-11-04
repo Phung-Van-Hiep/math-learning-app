@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import LessonDetail from './pages/LessonDetail';
 import './App.css';
 
 // Protected Route Component
@@ -39,6 +40,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/lessons/:slug"
+        element={
+          <ProtectedRoute>
+            <LessonDetail />
           </ProtectedRoute>
         }
       />
