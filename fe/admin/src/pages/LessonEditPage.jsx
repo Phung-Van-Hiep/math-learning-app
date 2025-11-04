@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../services/api';
 import LessonForm from '../components/LessonForm';
 
 const LessonEditPage = () => {
@@ -11,9 +11,8 @@ const LessonEditPage = () => {
   useEffect(() => {
     const fetchLesson = async () => {
       try {
-        const response = await axios.get('/api/content/math');
-        const lessonToEdit = response.data.find(l => l.id === parseInt(lessonId));
-        setLesson(lessonToEdit);
+        const response = await apiClient.get(`/admin/content/${lessonId}`);
+        setLesson(response.data);
       } catch (error) {
         console.error('Error fetching lesson:', error);
       }
@@ -24,12 +23,7 @@ const LessonEditPage = () => {
 
   const handleUpdateLesson = async (updatedLesson) => {
     try {
-      const token = localStorage.getItem('adminToken');
-      await axios.put(`/api/admin/content/${lessonId}`, updatedLesson, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await apiClient.put(`/admin/content/${lessonId}`, updatedLesson);
       navigate('/lessons');
     } catch (error) {
       console.error('Error updating lesson:', error);

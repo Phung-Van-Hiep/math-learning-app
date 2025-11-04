@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LessonForm from '../components/LessonForm';
+import apiClient from '../services/api';
 
 const LessonCreatePage = () => {
   const navigate = useNavigate();
@@ -9,11 +10,7 @@ const LessonCreatePage = () => {
     console.log('Creating lesson:', lesson);
     try {
       const token = localStorage.getItem('adminToken');
-      await axios.post('/api/admin/content', lesson, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await apiClient.post('/admin/content', lesson);
       navigate('/lessons');
     } catch (error) {
       console.error('Error creating lesson:', error);

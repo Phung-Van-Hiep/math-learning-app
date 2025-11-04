@@ -21,6 +21,7 @@ from be.entities.interactive_schemas import InteractiveCreate, InteractiveRespon
 from be.entities.assessment_schemas import AssessmentCreate, AssessmentResponse
 from be.entities.feedback_schemas import FeedbackResponse
 from be.entities.dashboard_schemas import DashboardStats
+from be.entities.student_schemas import StudentResponse
 from services.auth import (
     verify_password, get_password_hash, create_access_token,
     ACCESS_TOKEN_EXPIRE_MINUTES, get_current_admin
@@ -276,6 +277,18 @@ async def delete_content(
     db.commit()
     return {"message": "Content deleted successfully"}
 
+@router.get("/content/{content_id}", response_model=ContentResponse)
+async def get_content_admin(
+    content_id: int,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get single content item (admin)"""
+    content = db.query(Content).filter(Content.id == content_id).first()
+    if not content:
+        raise HTTPException(status_code=404, detail="Content not found")
+    return content
+
 # ==================== INTERACTIVE ====================
 @router.get("/interactive", response_model=List[InteractiveResponse])
 async def get_all_interactive_admin(
@@ -296,6 +309,18 @@ async def create_interactive(
     db.add(interactive)
     db.commit()
     db.refresh(interactive)
+    return interactive
+
+@router.get("/interactive/{interactive_id}", response_model=InteractiveResponse)
+async def get_interactive_admin(
+    interactive_id: int,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get single interactive tool (admin)"""
+    interactive = db.query(Interactive).filter(Interactive.id == interactive_id).first()
+    if not interactive:
+        raise HTTPException(status_code=404, detail="Interactive tool not found")
     return interactive
 
 @router.put("/interactive/{interactive_id}", response_model=InteractiveResponse)
@@ -354,15 +379,51 @@ async def create_assessment(
     db.refresh(assessment)
     return assessment
 
-@router.get("/assessments/{assessment_id}/results")
-async def get_assessment_results(
+@router.get("/assessments/{assessment_id}", response_model=AssessmentResponse)
+async def get_assessment_admin(
     assessment_id: int,
     current_admin: Admin = Depends(get_current_admin),
     db: Session = Depends(get_db)
 ):
-    """Get all results for an assessment"""
-    results = db.query(TestResult).filter(TestResult.assessment_id == assessment_id).all()
-    return results
+    """Get single assessment (admin)"""
+    assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    return assessment
+
+@router.put("/assessments/{assessment_id}", response_model=AssessmentResponse)
+async def update_assessment(
+    assessment_id: int,
+    assessment_data: AssessmentCreate,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Update assessment"""
+    assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+
+    for key, value in assessment_data.dict(exclude_unset=True).items():
+        setattr(assessment, key, value)
+
+    db.commit()
+    db.refresh(assessment)
+    return assessment
+
+@router.delete("/assessments/{assessment_id}")
+async def delete_assessment(
+    assessment_id: int,
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Delete assessment"""
+    assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+
+    db.delete(assessment)
+    db.commit()
+    return {"message": "Assessment deleted successfully"}
 
 # ==================== FEEDBACK ====================
 @router.get("/feedback", response_model=List[FeedbackResponse])
@@ -388,3 +449,12 @@ async def mark_feedback_read(
     db.commit()
 
     return {"message": "Feedback marked as read"}
+
+# ==================== STUDENTS ====================
+@router.get("/students", response_model=List[StudentResponse])
+async def get_all_students_admin(
+    current_admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Get all students (admin)"""
+    return db.query(Student).all()

@@ -18,13 +18,28 @@ const Sidebar = () => {
             </Link>
           </li>
           <li className="mb-4">
-            <Link to="/statistics" className="hover:text-gray-300">
-              Thống kê
+            <Link to="/interactive" className="hover:text-gray-300">
+              Công cụ tương tác
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/assessments" className="hover:text-gray-300">
+              Đánh giá
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/students" className="hover:text-gray-300">
+              Học sinh
             </Link>
           </li>
           <li className="mb-4">
             <Link to="/feedback" className="hover:text-gray-300">
               Phản hồi
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/statistics" className="hover:text-gray-300">
+              Thống kê
             </Link>
           </li>
           <li className="mb-4">
