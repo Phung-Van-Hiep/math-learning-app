@@ -1,0 +1,28 @@
+# FastAPI and core dependencies
+FastAPI
+uvicorn[standard]
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+
+# Database
+sqlalchemy
+alembic
+pymysql
+# or use: psycopg2-binary==2.9.9 for PostgreSQL
+
+# Validation and serialization
+pydantic
+pydantic-settings
+email-validator
+
+# File handling
+aiofiles
+pillow
+
+# Email
+fastapi-mail
+
+# Utilities
+pytz

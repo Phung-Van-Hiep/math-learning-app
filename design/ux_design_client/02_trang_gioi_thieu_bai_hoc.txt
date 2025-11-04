@@ -1,0 +1,241 @@
+================================================================================
+                    TRANG GIỚI THIỆU BÀI HỌC
+================================================================================
+
+MỤC ĐÍCH: Cung cấp thông tin chi tiết về bài học, đối tượng và mục tiêu
+
+================================================================================
+                            BỐ CỤC TRANG
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [HEADER - NAVIGATION BAR]                              │
+│  ┌────────┐                                          ┌────────────────┐  │
+│  │ LOGO   │     WEBSITE HỖ TRỢ DẠY HỌC TOÁN         │ 👤 Xin chào,  │  │
+│  │ TRƯỜNG │     [Tên giáo viên/lớp học]             │    An [▼]     │  │
+│  └────────┘                                          └────────────────┘  │
+│                                                                           │
+│  💡 Xem chi tiết trong file: 00_navigation_bar_common.txt                │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                           [BREADCRUMB]                                    │
+│  🏠 Trang chủ > 📚 Giới thiệu bài học                                    │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                         [TIÊU ĐỀ TRANG]                                  │
+│                                                                           │
+│               📚 GIỚI THIỆU BÀI HỌC                                       │
+│               [Tên cụ thể bài học: Ví dụ "Phương trình bậc nhất"]        │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [SECTION 1: THÔNG TIN GIÁO VIÊN]                      │
+│                                                                           │
+│   ┌──────────────┐                                                       │
+│   │              │                                                       │
+│   │   [ẢNH ĐẠI]  │    👨‍🏫 GIÁO VIÊN THIẾT KẾ                              │
+│   │    DIỆN GV   │                                                       │
+│   │              │    Họ và tên: [Tên giáo viên]                         │
+│   └──────────────┘    Trường: THCS Như Quỳnh                             │
+│                       Môn: Toán học                                       │
+│                       Email: [email@example.com]                          │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [SECTION 2: ĐỐI TƯỢNG HỌC SINH]                       │
+│                                                                           │
+│   🎓 ĐỐI TƯỢNG HỌC SINH                                                  │
+│   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                        │
+│                                                                           │
+│   • Lớp: [Lớp 8/9/10...]                                                 │
+│   • Trình độ: [Cơ bản/Trung bình/Nâng cao]                               │
+│                                                                           │
+│   📋 KỸ NĂNG CẦN CÓ:                                                      │
+│   ✓ [Kỹ năng 1: Ví dụ "Biết các phép tính cơ bản"]                      │
+│   ✓ [Kỹ năng 2: Ví dụ "Đã học về phương trình"]                         │
+│   ✓ [Kỹ năng 3: Ví dụ "Hiểu về biến số"]                                │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [SECTION 3: MỤC TIÊU BÀI HỌC]                         │
+│                                                                           │
+│   🎯 MỤC TIÊU BÀI HỌC                                                     │
+│   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                        │
+│                                                                           │
+│   ┌────────────────────────────────────────────────────────────┐        │
+│   │  📖 VỀ KIẾN THỨC:                                          │        │
+│   │  • [Kiến thức 1: Ví dụ "Hiểu khái niệm phương trình"]     │        │
+│   │  • [Kiến thức 2: Ví dụ "Nắm được cách giải"]              │        │
+│   │  • [Kiến thức 3: ...]                                      │        │
+│   └────────────────────────────────────────────────────────────┘        │
+│                                                                           │
+│   ┌────────────────────────────────────────────────────────────┐        │
+│   │  💪 VỀ KỸ NĂNG:                                            │        │
+│   │  • [Kỹ năng 1: Ví dụ "Giải phương trình bậc nhất"]        │        │
+│   │  • [Kỹ năng 2: Ví dụ "Biến đổi phương trình"]             │        │
+│   │  • [Kỹ năng 3: Ví dụ "Kiểm tra nghiệm"]                   │        │
+│   └────────────────────────────────────────────────────────────┘        │
+│                                                                           │
+│   ┌────────────────────────────────────────────────────────────┐        │
+│   │  ⭐ VỀ PHẨM CHẤT:                                          │        │
+│   │  • [Phẩm chất 1: Ví dụ "Tự tin trong học tập"]            │        │
+│   │  • [Phẩm chất 2: Ví dụ "Chính xác, cẩn thận"]             │        │
+│   │  • [Phẩm chất 3: ...]                                      │        │
+│   └────────────────────────────────────────────────────────────┘        │
+│                                                                           │
+│   ┌────────────────────────────────────────────────────────────┐        │
+│   │  🚀 VỀ NĂNG LỰC:                                           │        │
+│   │  • [Năng lực 1: Ví dụ "Tư duy logic"]                      │        │
+│   │  • [Năng lực 2: Ví dụ "Giải quyết vấn đề"]                │        │
+│   │  • [Năng lực 3: Ví dụ "Vận dụng toán học"]                │        │
+│   └────────────────────────────────────────────────────────────┘        │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [SECTION 4: THỜI LƯỢNG & KẾ HOẠCH]                    │
+│                                                                           │
+│   ⏰ THỜI LƯỢNG HỌC                                                       │
+│   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                        │
+│                                                                           │
+│   • Thời gian học: [2 tiết / 90 phút]                                    │
+│   • Video bài giảng: [20 phút]                                           │
+│   • Thực hành bài tập: [30 phút]                                         │
+│   • Kiểm tra đánh giá: [15 phút]                                         │
+│                                                                           │
+│   📅 KẾ HOẠCH BÀI HỌC:                                                    │
+│   ┌─────────────────────────────────────────────────────┐               │
+│   │  Bước 1: Xem video bài giảng                    →  │               │
+│   │  Bước 2: Đọc tóm tắt lý thuyết                  →  │               │
+│   │  Bước 3: Làm bài tập SGK và tự luyện            →  │               │
+│   │  Bước 4: Thực hành với công cụ tương tác        →  │               │
+│   │  Bước 5: Làm bài kiểm tra đánh giá              →  │               │
+│   └─────────────────────────────────────────────────────┘               │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [SECTION 5: TÀI LIỆU THAM KHẢO]                        │
+│                                                                           │
+│   📚 TÀI LIỆU THAM KHẢO                                                   │
+│   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                        │
+│                                                                           │
+│   • Sách giáo khoa Toán [lớp X] - NXB Giáo dục Việt Nam                  │
+│   • Sách bài tập Toán [lớp X]                                            │
+│   • [Tài liệu tham khảo khác nếu có]                                     │
+│   • [Website/nguồn trực tuyến]                                           │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [CALL TO ACTION BUTTONS]                               │
+│                                                                           │
+│      ┌──────────────────────┐         ┌──────────────────────┐          │
+│      │  🎥 XEM VIDEO        │         │  📝 VÀO HỌC NGAY     │          │
+│      │     BÀI GIẢNG        │         │                       │          │
+│      └──────────────────────┘         └──────────────────────┘          │
+│                                                                           │
+│      ┌──────────────────────┐                                            │
+│      │  🏠 VỀ TRANG CHỦ     │                                            │
+│      └──────────────────────┘                                            │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                        CHI TIẾT CÁC THÀNH PHẦN
+================================================================================
+
+1. NAVIGATION BAR (Breadcrumb)
+   Vị trí: Top của trang
+   Kích thước: Full width
+   Background: Xám nhạt (#F5F5F5)
+   Padding: 10-15px
+   Font: 14px
+   - Có link về trang trước
+
+2. TIÊU ĐỀ TRANG
+   Vị trí: Dưới navigation
+   Text-align: Center
+   Font-size: 32-36px (tiêu đề chính)
+   Font-size: 20-24px (tên bài học)
+   Padding: 30px top/bottom
+   Background: Gradient nhẹ
+
+3. THÔNG TIN GIÁO VIÊN
+   Bố cục: Flexbox - horizontal
+   - Ảnh đại diện: Circle, 120x120px, bên trái
+   - Thông tin: Bên phải ảnh
+   Background: Card với shadow nhẹ
+   Padding: 30px
+   Border-radius: 12px
+
+4. ĐỐI TƯỢNG HỌC SINH
+   Background: Card màu xanh nhạt
+   Padding: 25px
+   Border-left: 4px solid màu chủ đạo
+   Margin-top: 20px
+   - List items với checkmark icons
+   - Font: 16px
+
+5. MỤC TIÊU BÀI HỌC
+   Layout: 4 cards riêng biệt (Grid 2x2 hoặc vertical)
+   Mỗi card:
+   - Background: Màu khác nhau nhẹ (xanh, cam, xanh lá, tím)
+   - Border-radius: 8px
+   - Padding: 20px
+   - Icon phân biệt cho từng loại mục tiêu
+   - List với bullet points
+   Gap: 15px giữa các cards
+
+6. THỜI LƯỢNG & KẾ HOẠCH
+   Background: Card trắng
+   Padding: 25px
+   - Timeline/workflow với arrows
+   - Icons cho từng bước
+   - Màu sắc phân biệt các bước
+
+7. TÀI LIỆU THAM KHẢO
+   Background: Card xám nhạt
+   Padding: 20px
+   - List với icon sách
+   - Font: 15px
+   - Line-height: 1.8
+
+8. CALL TO ACTION BUTTONS
+   Vị trí: Bottom của trang
+   Alignment: Center
+   Buttons:
+   - Width: 250px
+   - Height: 50px
+   - Border-radius: 25px
+   - Font: 16-18px, bold
+   - Màu sắc nổi bật với hover effect
+   - Gap: 15px giữa các buttons
+
+================================================================================
+                            MÀU SẮC CHO CÁC SECTION
+================================================================================
+
+- Thông tin GV: Xanh dương nhạt (#E3F2FD)
+- Đối tượng HS: Xanh lá nhạt (#E8F5E9)
+- Kiến thức: Xanh dương (#BBDEFB)
+- Kỹ năng: Cam nhạt (#FFE0B2)
+- Phẩm chất: Xanh lá (#C8E6C9)
+- Năng lực: Tím nhạt (#E1BEE7)
+- Thời lượng: Vàng nhạt (#FFF9C4)
+- Tài liệu: Xám (#F5F5F5)
+
+================================================================================
+                        RESPONSIVE DESIGN
+================================================================================
+
+- Desktop: Cards 2 columns cho mục tiêu bài học
+- Tablet: Cards 1 column, maintain layout
+- Mobile: All vertical stack, ảnh GV trên text
+
+================================================================================

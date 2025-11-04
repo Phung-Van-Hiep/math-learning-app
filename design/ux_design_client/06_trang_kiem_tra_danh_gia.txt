@@ -1,0 +1,525 @@
+================================================================================
+                    TRANG KIỂM TRA - ĐÁNH GIÁ
+================================================================================
+
+MỤC ĐÍCH: Cung cấp bài kiểm tra trắc nghiệm (Google Form hoặc Quizizz)
+
+================================================================================
+                            BỐ CỤC TRANG
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [HEADER - NAVIGATION BAR]                              │
+│  ┌────────┐                                          ┌────────────────┐  │
+│  │ LOGO   │     WEBSITE HỖ TRỢ DẠY HỌC TOÁN         │ 👤 Xin chào,  │  │
+│  │ TRƯỜNG │     [Tên giáo viên/lớp học]             │    An [▼]     │  │
+│  └────────┘                                          └────────────────┘  │
+│                                                                           │
+│  💡 Xem chi tiết trong file: 00_navigation_bar_common.txt                │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                           [BREADCRUMB]                                    │
+│  🏠 Trang chủ > ✅ Kiểm tra & Đánh giá                                   │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                         [TIÊU ĐỀ TRANG]                                  │
+│                                                                           │
+│                ✅ KIỂM TRA & ĐÁNH GIÁ                                     │
+│                [Tên bài kiểm tra cụ thể]                                 │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [GIỚI THIỆU BÀI KIỂM TRA]                              │
+│                                                                           │
+│    📋 THÔNG TIN BÀI KIỂM TRA                                              │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    Để kiểm tra mức độ hiểu bài của mình, các em hãy hoàn thành bài       │
+│    kiểm tra trắc nghiệm dưới đây. Bài kiểm tra sẽ giúp các em:           │
+│                                                                           │
+│    ✓ Đánh giá kiến thức đã học                                           │
+│    ✓ Xác định những phần cần ôn tập thêm                                 │
+│    ✓ Củng cố và ghi nhớ kiến thức tốt hơn                                │
+│    ✓ Nhận phản hồi ngay lập tức                                          │
+│                                                                           │
+│    ⚠️ LƯU Ý QUAN TRỌNG:                                                   │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  🔐 CHƯA ĐĂNG NHẬP:                                        │       │
+│    │  • Có thể làm bài kiểm tra                                 │       │
+│    │  • KHÔNG lưu điểm vào hồ sơ                                │       │
+│    │  • Chỉ xem kết quả ngay sau khi nộp bài                   │       │
+│    │                                                             │       │
+│    │  ✅ ĐÃ ĐĂNG NHẬP:                                          │       │
+│    │  • Làm bài kiểm tra và LƯU điểm                           │       │
+│    │  • Xem lại kết quả bất cứ lúc nào tại [📊 Kết quả]        │       │
+│    │  • Theo dõi tiến độ học tập                                │       │
+│    │                                                             │       │
+│    │  💡 Đăng nhập để lưu kết quả!                              │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [CHI TIẾT BÀI KIỂM TRA]                                │
+│                                                                           │
+│    📊 THÔNG SỐ BÀI KIỂM TRA                                               │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  📝 Số câu hỏi:      [10-15 câu]                          │       │
+│    │  ⏰ Thời gian:       [20 phút]                             │       │
+│    │  📌 Dạng câu hỏi:    Trắc nghiệm                          │       │
+│    │  ✅ Chấm điểm:       Tự động                              │       │
+│    │  🔄 Số lần làm:      [Không giới hạn / 2 lần]            │       │
+│    │  📈 Điểm đạt:        [≥ 7/10 điểm]                        │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [NỘI DUNG KIỂM TRA]                                    │
+│                                                                           │
+│    📚 NỘI DUNG BÀI KIỂM TRA BAO GỒM                                       │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  ✓ Câu hỏi lý thuyết (30%)                                │       │
+│    │    - Định nghĩa, khái niệm                                 │       │
+│    │    - Công thức                                              │       │
+│    │    - Tính chất, quy tắc                                    │       │
+│    │                                                             │       │
+│    │  ✓ Câu hỏi vận dụng cơ bản (50%)                          │       │
+│    │    - Giải phương trình đơn giản                            │       │
+│    │    - Áp dụng công thức                                     │       │
+│    │    - Bài tập SGK tương tự                                  │       │
+│    │                                                             │       │
+│    │  ✓ Câu hỏi vận dụng nâng cao (20%)                        │       │
+│    │    - Bài toán thực tế                                      │       │
+│    │    - Tư duy logic                                          │       │
+│    │    - Kết hợp nhiều kiến thức                               │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [HƯỚNG DẪN LÀM BÀI]                                    │
+│                                                                           │
+│    📖 HƯỚNG DẪN LÀM BÀI KIỂM TRA                                          │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  1️⃣ CHUẨN BỊ:                                             │       │
+│    │     • Ôn lại lý thuyết và các ví dụ                       │       │
+│    │     • Chuẩn bị giấy nháp và bút để tính toán              │       │
+│    │     • Tìm nơi yên tĩnh, tập trung                         │       │
+│    │     • Đảm bảo kết nối internet ổn định                    │       │
+│    │                                                             │       │
+│    │  2️⃣ TRONG KHI LÀM BÀI:                                    │       │
+│    │     • Đọc kỹ đề bài trước khi chọn đáp án                 │       │
+│    │     • Tính toán cẩn thận trên giấy nháp                   │       │
+│    │     • Kiểm tra lại đáp án trước khi submit                │       │
+│    │     • Quản lý thời gian hợp lý                             │       │
+│    │                                                             │       │
+│    │  3️⃣ SAU KHI HOÀN THÀNH:                                   │       │
+│    │     • Xem kết quả và nhận xét                              │       │
+│    │     • Xem lại các câu sai để học hỏi                      │       │
+│    │     • Ôn tập lại phần kiến thức còn yếu                   │       │
+│    │     • Có thể làm lại để cải thiện điểm (nếu được phép)    │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [BÀI KIỂM TRA - EMBED]                                 │
+│                                                                           │
+│    🎯 BẮT ĐẦU LÀM BÀI KIỂM TRA                                            │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    OPTION 1: GOOGLE FORM                                                 │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │                                                             │       │
+│    │    ╔════════════════════════════════════════════╗          │       │
+│    │    ║                                            ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║      [GOOGLE FORM EMBED]                  ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║   Bài kiểm tra sẽ hiển thị trực tiếp      ║          │       │
+│    │    ║   tại đây. Học sinh điền form ngay        ║          │       │
+│    │    ║   trên trang web.                          ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║   [Các câu hỏi...]                        ║          │       │
+│    │    ║   [Choices...]                             ║          │       │
+│    │    ║   [Submit button]                          ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ╚════════════════════════════════════════════╝          │       │
+│    │                                                             │       │
+│    │    Height: 800-1200px (scrollable)                         │       │
+│    │                                                             │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+│    HOẶC                                                                  │
+│                                                                           │
+│    OPTION 2: QUIZIZZ                                                     │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │                                                             │       │
+│    │    ╔════════════════════════════════════════════╗          │       │
+│    │    ║                                            ║          │       │
+│    │    ║      [QUIZIZZ EMBED/LINK]                 ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║   Nhấn nút bên dưới để bắt đầu làm bài    ║          │       │
+│    │    ║   kiểm tra trên Quizizz                   ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║   ┌────────────────────────────────┐      ║          │       │
+│    │    ║   │  🎮 BẮT ĐẦU QUIZIZZ            │      ║          │       │
+│    │    ║   │     (Mở trong tab mới)         │      ║          │       │
+│    │    ║   └────────────────────────────────┘      ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ║   Game PIN (nếu cần): XXXXXX              ║          │       │
+│    │    ║                                            ║          │       │
+│    │    ╚════════════════════════════════════════════╝          │       │
+│    │                                                             │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+│    📱 Nếu embed không hiển thị, click link bên dưới:                     │
+│    🔗 [Link trực tiếp đến Google Form/Quizizz]                           │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [THANG ĐIỂM VÀ ĐÁNH GIÁ]                               │
+│                                                                           │
+│    📊 THANG ĐIỂM & ĐÁNH GIÁ                                               │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  🏆 9-10 điểm:  XUẤT SẮC                                   │       │
+│    │     Các em đã nắm vững kiến thức bài học!                  │       │
+│    │     Tiếp tục phát huy!                                      │       │
+│    │                                                             │       │
+│    │  ⭐ 7-8 điểm:   KHÁ                                        │       │
+│    │     Các em đã hiểu phần lớn bài học.                       │       │
+│    │     Xem lại một số điểm chưa chắc chắn.                   │       │
+│    │                                                             │       │
+│    │  ✅ 5-6 điểm:   TRUNG BÌNH                                 │       │
+│    │     Các em cần ôn tập lại lý thuyết và làm thêm bài tập.  │       │
+│    │     Xem lại video bài giảng.                               │       │
+│    │                                                             │       │
+│    │  📚 < 5 điểm:    CẦN CỐ GẮNG                               │       │
+│    │     Các em cần học lại bài từ đầu.                        │       │
+│    │     Liên hệ giáo viên để được hỗ trợ thêm.                │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+│    💡 LƯU Ý:                                                              │
+│    • Điểm số được tính tự động ngay sau khi nộp bài                      │
+│    • Các em sẽ nhận được kết quả chi tiết qua email (nếu có)             │
+│    • Giáo viên sẽ xem và phản hồi thêm nếu cần                           │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [HOẠT ĐỘNG SAU KIỂM TRA]                               │
+│                                                                           │
+│    ✏️ SAU KHI HOÀN THÀNH BÀI KIỂM TRA                                    │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    Hãy đánh dấu vào ô bên dưới để xác nhận đã hoàn thành:                │
+│                                                                           │
+│    ┌────────────────────────────────────────────────────────────┐       │
+│    │  ☐ Tôi đã hoàn thành bài kiểm tra                         │       │
+│    │  ☐ Tôi đã xem lại các câu sai                             │       │
+│    │  ☐ Tôi đã ôn tập lại phần kiến thức yếu                   │       │
+│    └────────────────────────────────────────────────────────────┘       │
+│                                                                           │
+│    📋 BƯỚC TIẾP THEO:                                                     │
+│                                                                           │
+│    ┌──────────────────────────────────────────────┐                     │
+│    │  📚 Xem lại nội dung Toán học    [XEM NGAY]  │                     │
+│    └──────────────────────────────────────────────┘                     │
+│                                                                           │
+│    ┌──────────────────────────────────────────────┐                     │
+│    │  🎥 Xem lại video bài giảng      [XEM NGAY]  │                     │
+│    └──────────────────────────────────────────────┘                     │
+│                                                                           │
+│    ┌──────────────────────────────────────────────┐                     │
+│    │  💬 Liên hệ giáo viên (nếu cần)  [LIÊN HỆ]   │                     │
+│    └──────────────────────────────────────────────┘                     │
+│                                                                           │
+│    ┌──────────────────────────────────────────────┐                     │
+│    │  🔄 Làm lại bài kiểm tra         [LÀM LẠI]   │                     │
+│    └──────────────────────────────────────────────┘                     │
+│    (Nếu được phép)                                                       │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [TIPS & TRICKS]                                        │
+│                                                                           │
+│    💡 MẸO ĐỂ ĐẠT ĐIỂM CAO                                                 │
+│    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                       │
+│                                                                           │
+│    ✨ Học thật kỹ lý thuyết trước khi làm bài                            │
+│    ✨ Làm hết bài tập SGK và bài tập tự luyện                            │
+│    ✨ Xem video bài giảng ít nhất 1 lần                                  │
+│    ✨ Ghi chú những điểm quan trọng và công thức                          │
+│    ✨ Thực hành với GeoGebra/công cụ tương tác                           │
+│    ✨ Đọc kỹ đề bài, không vội vàng                                      │
+│    ✨ Kiểm tra lại đáp án trước khi submit                                │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                    [NAVIGATION BUTTONS]                                   │
+│                                                                           │
+│    ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐    │
+│    │  ⬅ TƯƠNG TÁC    │  │  💬 PHẢN HỒI &   │  │  🏠 TRANG CHỦ    │    │
+│    │    & MINH HỌA    │  │     LIÊN HỆ      │  │                  │    │
+│    └──────────────────┘  └──────────────────┘  └──────────────────┘    │
+│                                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                        CHI TIẾT CÁC THÀNH PHẦN
+================================================================================
+
+1. GIỚI THIỆU BÀI KIỂM TRA
+   Background: Light blue (#E3F2FD)
+   Padding: 30px
+   Border-radius: 12px
+   Margin-bottom: 30px
+
+   Text:
+   - Font: 16px
+   - Line-height: 1.8
+   - Checkmarks: Green (#4CAF50)
+
+2. THÔNG SỐ BÀI KIỂM TRA
+   Card style:
+   - Background: White
+   - Border: 2px solid gray
+   - Padding: 25px
+   - Border-radius: 10px
+   - Box-shadow: Medium
+
+   Info layout:
+   - Icon + Label + Value
+   - Aligned in columns
+   - Font: 16px
+   - Line-height: 2.0
+
+3. NỘI DUNG KIỂM TRA
+   Background: Light yellow (#FFFBEA)
+   Padding: 25px
+   Border-left: 4px solid orange
+
+   List items:
+   - Checkmark icons
+   - Nested sub-items indented
+   - Percentage in parentheses bold
+
+4. HƯỚNG DẪN LÀM BÀI
+   Card style with steps:
+   - Background: Light background
+   - Padding: 25px
+   - Border-radius: 10px
+
+   Numbered sections:
+   - Large emoji numbers (1️⃣ 2️⃣ 3️⃣)
+   - Bold headers
+   - Bullet list sub-items
+   - Font: 15px
+
+5. BÀI KIỂM TRA EMBED
+
+   A. GOOGLE FORM:
+   <iframe src="https://docs.google.com/forms/d/e/[FORM_ID]/viewform?embedded=true"
+           width="100%"
+           height="1200"
+           frameborder="0"
+           marginheight="0"
+           marginwidth="0">
+           Loading…
+   </iframe>
+
+   Container:
+   - Max-width: 800px
+   - Center aligned
+   - Border-radius: 12px
+   - Box-shadow: Large
+   - Margin: 30px auto
+
+   B. QUIZIZZ:
+   Button style:
+   - Large button (300x60px)
+   - Primary color background
+   - White text
+   - Border-radius: 30px
+   - Icon + text
+   - Hover: Scale 1.05
+   - Target: _blank (open new tab)
+
+   Link: Display clearly below
+   - Font: 14px
+   - Color: Blue
+   - Underline on hover
+
+   Game PIN display:
+   - Large font (24px)
+   - Bold
+   - Monospace
+   - Background: Light gray
+   - Padding: 10px
+   - Border-radius: 6px
+
+6. THANG ĐIỂM
+   Each level card:
+   - Distinct background color:
+     - Xuất sắc: Light green (#E8F5E9)
+     - Khá: Light blue (#E3F2FD)
+     - Trung bình: Light yellow (#FFFBEA)
+     - Cần cố gắng: Light orange (#FFE0B2)
+   - Icon for each level (🏆⭐✅📚)
+   - Border-left: 4px solid matching color
+   - Padding: 15px
+   - Margin-bottom: 10px
+
+7. HOẠT ĐỘNG SAU KIỂM TRA
+   Checkboxes:
+   - Large checkbox (20x20px)
+   - Font: 16px
+   - Line-height: 2.0
+   - Interactive (if using JS)
+
+   Action buttons:
+   - Style: Outlined buttons
+   - Width: 400px
+   - Height: 50px
+   - Icon + text
+   - Border: 2px solid
+   - Border-radius: 25px
+   - Margin: 10px
+   - Hover: Fill background
+
+8. TIPS & TRICKS
+   Background: Light green (#E8F5E9)
+   Border-left: 4px solid green
+   Padding: 20px
+
+   Items:
+   - Sparkle emoji (✨)
+   - Font: 15px
+   - Line-height: 2.0
+
+9. NAVIGATION BUTTONS
+   Same style as other pages
+
+================================================================================
+                            MÀU SẮC
+================================================================================
+
+- Giới thiệu: Light blue (#E3F2FD)
+- Thông số: White with shadow
+- Nội dung: Light yellow (#FFFBEA)
+- Hướng dẫn: Light gray (#F5F5F5)
+- Xuất sắc: Light green (#E8F5E9)
+- Khá: Light blue (#E3F2FD)
+- Trung bình: Light yellow (#FFFBEA)
+- Cần cố gắng: Light orange (#FFE0B2)
+- Tips: Light green (#E8F5E9)
+- Buttons: Primary blue (#2196F3)
+
+================================================================================
+                        RESPONSIVE DESIGN
+================================================================================
+
+- Desktop (>1024px):
+  - Google Form embed: 800px width, 1200px height
+  - Buttons: 400px width
+
+- Tablet (768-1024px):
+  - Google Form: 100% width with padding
+  - Buttons: 350px width
+
+- Mobile (<768px):
+  - Google Form: 100% width, adjust height
+  - Buttons: 100% width
+  - Stack all content vertically
+
+================================================================================
+                            EMBED INSTRUCTIONS
+================================================================================
+
+GOOGLE FORM:
+1. Tạo Google Form với 10-15 câu hỏi
+2. Settings:
+   - Collect email (optional)
+   - Limit to 1 response (optional)
+   - Show correct answers after submit (recommended)
+3. Click "Send" > "Embed HTML" > Copy iframe code
+4. Paste vào trang web
+
+QUIZIZZ:
+1. Tạo Quizizz quiz với 10-15 câu hỏi
+2. Settings:
+   - Quiz type: Homework hoặc Live
+   - Time limit per question
+   - Show answers: After quiz
+3. Get link or Game PIN
+4. Embed hoặc tạo button với link
+
+================================================================================
+                            YÊU CẦU KIỂM TRA
+================================================================================
+
+THEO PDF:
+- 10-15 câu trắc nghiệm
+- Bám sát mục tiêu bài học
+- Chấm điểm tự động
+- Có thông báo kết quả
+
+PHÂN BỐ CÂU HỎI:
+- 30%: Lý thuyết (định nghĩa, công thức)
+- 50%: Vận dụng cơ bản (giải bài tập)
+- 20%: Vận dụng nâng cao (tư duy, tổng hợp)
+
+LOẠI CÂU HỎI:
+- Multiple choice (4 options)
+- True/False (nếu phù hợp)
+- Fill in the blank (nếu công cụ hỗ trợ)
+
+================================================================================
+                            LƯU Ý QUAN TRỌNG
+================================================================================
+
+1. CHẤM ĐIỂM TỰ ĐỘNG
+   - Google Form: Enable "Release score immediately after each submission"
+   - Quizizz: Automatic scoring
+
+2. PHẢN HỒI
+   - Show correct answers
+   - Provide explanations (trong Google Form: Response validation)
+   - Allow review of responses
+
+3. THÔNG BÁO KẾT QUẢ
+   - Email confirmation (if collecting emails)
+   - On-screen result display
+   - Summary of performance
+
+4. BẢO MẬT
+   - Không yêu cầu quá nhiều thông tin cá nhân
+   - Chỉ cần: Họ tên, lớp (optional: email)
+
+5. ACCESSIBILITY
+   - Ensure form is accessible (clear labels)
+   - Mobile-friendly
+   - Support screen readers
+
+6. THỜI GIAN
+   - Đủ thời gian để suy nghĩ (20-30 phút cho 15 câu)
+   - Không quá gấp gáp
+   - Có thể pause (nếu là homework mode)
+
+================================================================================

@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: thcs_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_change_this
+      MYSQL_DATABASE: thcs_math
+      MYSQL_USER: thcs_user
+      MYSQL_PASSWORD: thcs_password_change_this
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db_init:/docker-entrypoint-initdb.d
+    networks:
+      - thcs_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # PostgreSQL Database (Alternative - comment out if using MySQL)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: thcs_postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: thcs_math
+  #     POSTGRES_USER: thcs_user
+  #     POSTGRES_PASSWORD: thcs_password_change_this
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./db_init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - thcs_network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U thcs_user -d thcs_math"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # phpMyAdmin (Optional - for MySQL management)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: thcs_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: thcs_user
+      PMA_PASSWORD: thcs_password_change_this
+    ports:
+      - "8085:80"
+    networks:
+      - thcs_network
+    depends_on:
+      - mysql
+
+  # Adminer (Alternative DB management tool - lightweight)
+  # adminer:
+  #   image: adminer:latest
+  #   container_name: thcs_adminer
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8085:8085"
+  #   networks:
+  #     - thcs_network
+  #   depends_on:
+  #     - mysql
+
+volumes:
+  mysql_data:
+    driver: local
+  # postgres_data:
+  #   driver: local
+
+networks:
+  thcs_network:
+    driver: bridge

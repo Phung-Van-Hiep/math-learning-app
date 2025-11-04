@@ -1,0 +1,73 @@
+================================================================================
+                    ADMIN - QUẢN LÝ KIỂM TRA & ĐÁNH GIÁ
+================================================================================
+
+Manage assessment and view student results.
+
+================================================================================
+                KEY FEATURES
+================================================================================
+
+1. ASSESSMENT SETUP
+   - Google Form URL input
+   - Quizizz link/PIN
+   - Test instructions editor
+   - Time limit settings
+   - Grading scale configuration
+   - Number of questions
+   - Passing score
+
+2. QUESTION BANK (if custom)
+   - Add/Edit questions
+   - Question type: Multiple choice, True/False
+   - Add images to questions
+   - Set correct answers
+   - Assign points per question
+   - Categorize by difficulty
+
+3. STUDENT RESULTS DASHBOARD
+   ┌──────────────────────────────────────────────────┐
+   │  📊 RESULTS OVERVIEW                             │
+   │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━        │
+   │                                                   │
+   │  Total submissions: 89                            │
+   │  Average score: 7.5/10                            │
+   │  Pass rate: 78%                                   │
+   │  Highest: 10/10                                   │
+   │  Lowest: 3/10                                     │
+   │                                                   │
+   │  ┌────────────────────┐                          │
+   │  │ 📥 EXPORT RESULTS  │                          │
+   │  └────────────────────┘                          │
+   └──────────────────────────────────────────────────┘
+
+4. INDIVIDUAL RESULTS TABLE
+   ┌─────────────────────────────────────────────────────────┐
+   │ STT | Họ tên      | Lớp | Điểm | Thời gian | Hành động │
+   │ 1   | Nguyễn Văn A| 8A  | 9/10 | 15/01 10h | [XEM]     │
+   │ 2   | Trần Thị B  | 8B  | 7/10 | 15/01 14h | [XEM]     │
+   │ ... | ...         | ... | ...  | ...       | [XEM]     │
+   └─────────────────────────────────────────────────────────┘
+
+   Features:
+   - Sort by name, class, score, date
+   - Filter by class, score range
+   - Search by name
+   - Export to CSV/Excel
+   - View detailed answers
+
+5. STATISTICS & ANALYTICS
+   - Score distribution chart
+   - Question difficulty analysis
+   - Most missed questions
+   - Time spent analysis
+   - Completion rate over time
+
+COMPONENTS:
+- Form embed code input
+- Results table with filters
+- Charts and graphs
+- Export buttons
+- Email notifications setup
+
+================================================================================

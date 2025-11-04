@@ -1,0 +1,33 @@
+{
+  "name": "thcs-math-website-frontend",
+  "version": "1.0.0",
+  "description": "THCS Math Teaching Website - Frontend",
+  "type": "module",
+  "scripts": {
+    "dev:client": "vite --config client/vite.config.js",
+    "dev:admin": "vite --config admin/vite.config.js",
+    "dev": "npm-run-all --parallel dev:client dev:admin",
+    "build:client": "vite build --config client/vite.config.js",
+    "build:admin": "vite build --config admin/vite.config.js",
+    "build": "npm-run-all build:client build:admin",
+    "preview:client": "vite preview --config client/vite.config.js",
+    "preview:admin": "vite preview --config admin/vite.config.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.3",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.0.11"
+  }
+}

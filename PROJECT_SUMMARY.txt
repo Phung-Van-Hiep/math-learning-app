@@ -1,0 +1,375 @@
+================================================================================
+                    DỰ ÁN WEBSITE DẠY HỌC TOÁN THCS
+                    Trường THCS Như Quỳnh
+================================================================================
+
+TỔNG QUAN DỰ ÁN
+================================================================================
+
+Dự án: Website hỗ trợ dạy học môn Toán THCS
+Đối tượng: Học sinh THCS (lớp 6-9)
+Người dùng: Học sinh (client) và Giáo viên (admin)
+
+
+================================================================================
+                    PHẦN CLIENT (Học sinh)
+================================================================================
+
+10 TRANG CHO HỌC SINH (7 công khai + 3 bảo vệ):
+
+1. TRANG CHỦ
+   - Banner chào mừng
+   - Navigation grid (6 cards)
+   - Logo trường học
+
+2. GIỚI THIỆU BÀI HỌC
+   - Thông tin giáo viên (ảnh + profile)
+   - Đối tượng học sinh
+   - Mục tiêu: Kiến thức, kỹ năng, phẩm chất, năng lực
+   - Thời lượng học
+   - Tài liệu tham khảo
+
+3. VIDEO BÀI GIẢNG
+   - Video player (YouTube/Google Drive)
+   - Mô tả và timeline
+   - Điểm cần ghi nhớ
+   - Video bổ sung
+   - Tài liệu đính kèm
+
+4. NỘI DUNG TOÁN HỌC
+   - Tóm tắt lý thuyết (công thức, định nghĩa)
+   - Ví dụ minh họa có lời giải
+   - Bài tập SGK
+   - Bài tập tự luyện
+   - GeoGebra tương tác
+
+5. TƯƠNG TÁC & MINH HỌA (Bonus - không bắt buộc)
+   - GeoGebra activities
+   - Maple examples
+   - Mindmap
+   - Công cụ khác
+
+6. KIỂM TRA & ĐÁNH GIÁ
+   - Google Form/Quizizz embed
+   - Hướng dẫn làm bài
+   - Thang điểm
+   - Hoạt động sau kiểm tra
+
+7. PHẢN HỒI & LIÊN HỆ
+   - Biểu mẫu phản hồi (Google Form)
+   - Thông tin liên hệ GV (email, phone, Zalo)
+   - FAQ
+   - Social sharing
+
+🔒 PROTECTED PAGES (Yêu cầu đăng nhập):
+
+8. KẾT QUẢ HỌC TẬP
+   - Statistics overview (tổng bài, điểm TB, cao nhất)
+   - Danh sách bài kiểm tra với điểm số
+   - Biểu đồ tiến độ học tập
+   - Thành tích theo chủ đề
+   - Gợi ý học tập
+   - Chi tiết từng bài (modal)
+   - Export báo cáo
+
+9. BÀI LÀM CỦA TÔI
+   - 3 tabs: Đang làm, Đã hoàn thành, Tất cả
+   - Progress tracking cho bài đang làm
+   - Tiếp tục làm bài dở
+   - Xem lại bài đã hoàn thành
+   - Làm lại bài
+   - Filter và search
+
+10. CÀI ĐẶT TÀI KHOẢN
+    - 4 tabs: Thông tin, Mật khẩu, Thông báo, Tài khoản
+    - Cập nhật profile (ảnh, tên, email, lớp)
+    - Đổi mật khẩu (với strength indicator)
+    - Cài đặt thông báo
+    - Export dữ liệu
+    - Đăng xuất tất cả thiết bị
+    - Xóa tài khoản (với confirmation)
+
+================================================================================
+                    PHẦN ADMIN (Giáo viên)
+================================================================================
+
+8 TRANG CHO GIÁO VIÊN:
+
+0. LOGIN PAGE
+   - Email/password authentication
+   - Remember me
+   - Forgot password
+   - Secure session
+
+1. DASHBOARD
+   - Thống kê: Lượt xem, học sinh, bài làm, phản hồi
+   - Quick actions: Thêm bài học, tải video, tạo kiểm tra
+   - Quản lý nội dung (overview)
+   - Phản hồi gần đây
+   - Hoạt động gần đây
+
+2. QUẢN LÝ GIỚI THIỆU
+   - Upload ảnh giáo viên
+   - Form: Thông tin GV, đối tượng HS
+   - Dynamic lists: Kỹ năng, mục tiêu (4 loại), tài liệu
+   - Save draft/Preview/Publish
+
+3. QUẢN LÝ VIDEO
+   - Danh sách video đã tải
+   - Upload options: YouTube, Google Drive, Direct upload
+   - Video metadata: Title, description, duration
+   - Timeline editor
+   - Điểm ghi nhớ
+   - Tài liệu đính kèm
+   - Statistics per video
+
+4. QUẢN LÝ NỘI DUNG
+   - Rich text editor với math support
+   - Sections: Lý thuyết, ví dụ, bài tập SGK, tự luyện
+   - GeoGebra embed
+   - Add/Edit/Delete/Reorder
+   - Preview mode
+
+5. QUẢN LÝ TƯƠNG TÁC (Bonus)
+   - GeoGebra activity manager
+   - Maple code editor
+   - Mindmap upload
+   - Other tools embed
+
+6. QUẢN LÝ KIỂM TRA
+   - Google Form/Quizizz setup
+   - View student results (table + charts)
+   - Export results
+   - Statistics & analytics
+   - Question bank (optional)
+
+7. QUẢN LÝ PHẢN HỒI
+   - List feedback with filters
+   - Read/Reply feedback
+   - Email notifications
+   - Mark as read/unread
+   - Edit contact information
+   - Manage FAQ
+   - Statistics dashboard
+
+================================================================================
+                    TÍNH NĂNG CHÍNH
+================================================================================
+
+CLIENT FEATURES:
+✓ Responsive design (Desktop/Tablet/Mobile)
+✓ Student authentication system (Login/Register/Logout)
+✓ User profile with dropdown menu
+✓ Sticky navigation bar on all pages
+✓ Session management & protected routes
+✓ View test results and history
+✓ Video streaming (YouTube/Drive)
+✓ Interactive math content
+✓ Online assessment
+✓ Feedback system
+✓ Downloadable resources
+✓ Math formula rendering
+✓ GeoGebra integration
+
+ADMIN FEATURES:
+✓ Secure authentication
+✓ Content management (CRUD)
+✓ Video upload (multiple methods)
+✓ Rich text editor
+✓ File upload system
+✓ Student results dashboard
+✓ Feedback management
+✓ Statistics & analytics
+✓ Auto-save
+✓ Preview before publish
+✓ Draft/Publish workflow
+
+================================================================================
+                    THIẾT KẾ UX
+================================================================================
+
+MỖI FILE CHỨA:
+- ASCII diagrams với vị trí chính xác của components
+- Chi tiết về colors, fonts, spacing
+- Responsive design guidelines (Desktop/Tablet/Mobile)
+- Component dimensions và styling
+- Embed code examples (Google Forms, YouTube, GeoGebra)
+- Best practices và accessibility notes
+- Implementation suggestions
+
+================================================================================
+                    CÔNG NGHỆ ĐỀ XUẤT
+================================================================================
+
+FRONTEND:
+- HTML5, CSS3, JavaScript
+- Framework: React/Vue hoặc vanilla JS
+- UI Library: Bootstrap/Material-UI/Tailwind
+- Rich Text Editor: TinyMCE/Quill/CKEditor
+- Math Rendering: MathJax hoặc KaTeX
+
+BACKEND:
+- Node.js (Express) / PHP (Laravel) / Python (Django)
+- RESTful API
+
+DATABASE:
+- MySQL / PostgreSQL / MongoDB
+
+FILE STORAGE:
+- Local hoặc Cloud (AWS S3, Cloudinary)
+- YouTube, Google Drive integration
+
+AUTHENTICATION:
+- JWT hoặc Session-based
+- bcrypt password hashing
+
+DEPLOYMENT:
+- Frontend: Netlify, Vercel, GitHub Pages
+- Backend: Heroku, AWS, DigitalOcean
+- Database: Managed service
+
+================================================================================
+                    ĐIỂM SỐ DỰ KIẾN
+================================================================================
+
+THEO YÊU CẦU PDF:
+
+ĐẠT YÊU CẦU (8-9.0 điểm):
+✓ Trang chủ
+✓ Giới thiệu
+✓ Video (15-25 phút)
+✓ Nội dung Toán học
+✓ Đánh giá (Google Form/Quizizz)
+✓ Liên hệ
+
+TỐT - KHUYẾN KHÍCH (9.1-10 điểm):
+✓ Tất cả phần trên
+✓ Tương tác và minh họa (GeoGebra/Maple/Mindmap)
+✓ Tính sáng tạo
+✓ Tính sư phạm
+✓ ADMIN PANEL (giá trị gia tăng lớn)
+
+================================================================================
+                    HƯỚNG DẪN SỬ DỤNG
+================================================================================
+
+1. ĐỌC YÊU CẦU:
+   - Đọc file THCS_Như_Quỳnh_Requirement.pdf
+
+2. XEM THIẾT KẾ CLIENT:
+   - Mở thư mục design/ux_design_client
+   - Đọc từng file từ 01 đến 07
+   - Xem ASCII diagrams và specifications
+
+3. XEM THIẾT KẾ ADMIN:
+   - Mở thư mục design/ux_design_admin
+   - Đọc README.txt trước
+   - Xem từng file từ 00 đến 07
+
+4. TRIỂN KHAI:
+   - Chọn technology stack
+   - Setup project structure
+   - Implement frontend theo designs
+   - Develop backend API
+   - Setup database
+   - Integrate third-party services
+   - Test thoroughly
+   - Deploy
+
+5. TEST:
+   - Test responsive design
+   - Test all upload features
+   - Test authentication
+   - Test video playback
+   - Test forms and submissions
+   - Test on multiple devices/browsers
+
+================================================================================
+                    LƯU Ý QUAN TRỌNG
+================================================================================
+
+1. CONTENT:
+   - Video bài giảng: 15-25 phút (YÊU CẦU)
+   - Mỗi thành viên nhóm có 1 video
+   - Bài kiểm tra: 10-15 câu trắc nghiệm
+   - Biểu mẫu phản hồi đồng nhất với Gmail trường
+
+2. DESIGN:
+   - Responsive cho mobile/tablet/desktop
+   - Dễ sử dụng, trực quan
+   - Màu sắc hài hòa
+   - Navigation rõ ràng
+
+3. SECURITY:
+   - Secure authentication
+   - Input validation
+   - File upload validation
+   - HTTPS only
+   - Protect admin routes
+
+4. PERFORMANCE:
+   - Optimize images
+   - Lazy loading
+   - CDN for videos
+   - Caching
+   - Minify CSS/JS
+
+5. ACCESSIBILITY:
+   - Keyboard navigation
+   - Screen reader support
+   - Good contrast
+   - Alt text for images
+   - Clear labels
+
+================================================================================
+                    TIMELINE ĐỀ XUẤT
+================================================================================
+
+TUẦN 1-2: Setup & Frontend Client
+- Setup project
+- Implement client pages
+- Integrate Google Forms, YouTube
+
+TUẦN 3: Frontend Admin
+- Implement admin pages
+- Upload features
+- Rich text editor
+
+TUẦN 4: Backend & Database
+- API development
+- Database setup
+- Authentication
+
+TUẦN 5: Integration & Testing
+- Connect frontend-backend
+- Testing
+- Bug fixes
+
+TUẦN 6: Content & Deployment
+- Add actual lesson content
+- Record videos
+- Deploy
+- Final testing
+
+================================================================================
+                    KẾT LUẬN
+================================================================================
+
+Dự án đã được thiết kế đầy đủ với:
+✅ 7 trang client cho học sinh
+✅ 8 trang admin cho giáo viên
+✅ Detailed UX specifications
+✅ ASCII diagrams cho mọi page
+✅ Responsive design guidelines
+✅ Technical recommendations
+✅ Security considerations
+
+Với thiết kế này, nhóm có thể:
+- Đạt điểm tối đa (9.1-10) nếu implement đầy đủ
+- Có hệ thống quản lý content chuyên nghiệp
+- Dễ dàng mở rộng trong tương lai
+- Tạo trải nghiệm tốt cho học sinh và giáo viên
+
+CHÚC NHÓM THÀNH CÔNG! 🎓📚🎯
+
+================================================================================

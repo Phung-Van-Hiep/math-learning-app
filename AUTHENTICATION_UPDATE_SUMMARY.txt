@@ -1,0 +1,406 @@
+================================================================================
+                    CẬP NHẬT: HỆ THỐNG ĐĂNG NHẬP HỌC SINH
+                    STUDENT AUTHENTICATION UPDATE
+================================================================================
+
+Ngày cập nhật: [Date]
+Phiên bản: 2.0
+
+================================================================================
+                    TỔNG QUAN CẬP NHẬT
+================================================================================
+
+ĐÃ THÊM VÀO HỆ THỐNG:
+✅ Navigation bar với login/account icon trên mọi trang
+✅ Modal đăng nhập cho học sinh
+✅ Hệ thống đăng ký tài khoản
+✅ Quên mật khẩu & reset password
+✅ User dropdown menu khi đã đăng nhập
+✅ Protected routes (Kết quả, Bài làm, Cài đặt)
+✅ Session management
+✅ Breadcrumb navigation
+
+================================================================================
+                    FILES ĐÃ TẠO/CẬP NHẬT
+================================================================================
+
+FILES MỚI:
+1. 00_navigation_bar_common.txt
+   - Common navigation bar component
+   - Sticky header cho tất cả các trang
+   - 2 states: Logged in / Logged out
+   - User dropdown menu
+   - Responsive design
+
+2. 00_student_authentication_system.txt
+   - Toàn bộ hệ thống authentication
+   - Login/Register/Forgot password flows
+   - Session management
+   - Protected routes
+   - User profile pages
+   - API endpoints
+   - Database schema
+   - Security considerations
+
+FILES CẬP NHẬT:
+1. 01_trang_chu.txt
+   - Thêm login button/user icon trong header
+   - Thêm login modal
+   - Updated header specifications
+
+2. 02_trang_gioi_thieu_bai_hoc.txt
+   - Thêm navigation bar reference
+   - Thêm breadcrumb
+
+3. PROJECT_SUMMARY.txt
+   - Cập nhật danh sách files
+   - Thêm authentication features
+
+================================================================================
+                    VỊ TRÍ LOGIN/ACCOUNT ICON
+================================================================================
+
+HOMEPAGE (Trang chủ):
+┌──────────────────────────────────────────────────────────────────────────┐
+│  [LOGO]    WEBSITE HỖ TRỢ DẠY HỌC TOÁN                    [🔐 ĐĂNG NHẬP] │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Position: Top-right corner của header
+- Chưa login: Button "🔐 ĐĂNG NHẬP"
+- Đã login: Avatar + Name với dropdown
+
+ALL OTHER PAGES:
+┌──────────────────────────────────────────────────────────────────────────┐
+│  [LOGO]    WEBSITE HỖ TRỢ DẠY HỌC TOÁN              [👤 Xin chào, An ▼] │
+└──────────────────────────────────────────────────────────────────────────┘
+│  🏠 Trang chủ > 📚 Current Page                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+Position: Cùng vị trí - top-right của navigation bar
+Thêm: Breadcrumb navigation
+
+================================================================================
+                    USER DROPDOWN MENU
+================================================================================
+
+Khi click vào user icon/name, hiển thị dropdown:
+
+┌────────────────┐
+│ 📊 Kết quả     │ → /ket-qua (Protected)
+│ 📝 Bài làm     │ → /bai-lam (Protected)
+│ ⚙️ Cài đặt     │ → /cai-dat (Protected)
+│ 🚪 Đăng xuất   │ → Logout action
+└────────────────┘
+
+Dropdown specs:
+- Position: Absolute, below user section
+- Width: 200px
+- Background: White
+- Shadow: Medium
+- Animation: Fade in + slide down
+- Click outside: Close dropdown
+
+================================================================================
+                    LOGIN MODAL
+================================================================================
+
+Triggered by: Click "Đăng nhập" button
+
+Modal contains:
+- Họ và tên field
+- Email/Mã số field
+- Password field (with show/hide)
+- Remember me checkbox
+- Đăng nhập button
+- Links: Đăng ký, Quên mật khẩu
+
+Specs:
+- Center screen
+- Width: 420px (desktop), 90% (mobile)
+- White background
+- Large shadow
+- Fade in animation
+- Close: X button, ESC key, click outside
+
+================================================================================
+                    REGISTER MODAL
+================================================================================
+
+Triggered by: Click "Đăng ký ngay" trong login modal
+
+Fields:
+- Họ và tên *
+- Mã số học sinh * (unique)
+- Lớp * (dropdown)
+- Email * (unique)
+- Mật khẩu * (min 6 chars)
+- Xác nhận mật khẩu *
+
+After successful registration:
+- Auto login
+- Show welcome message
+- Redirect to homepage
+
+================================================================================
+                    PROTECTED ROUTES
+================================================================================
+
+3 PAGES YÊU CẦU ĐĂNG NHẬP:
+
+1. /ket-qua - KẾT QUẢ HỌC TẬP
+   - Hiển thị danh sách bài kiểm tra đã làm
+   - Điểm số, ngày làm
+   - Xem chi tiết từng bài
+   - Biểu đồ tiến độ
+
+2. /bai-lam - BÀI LÀM CỦA TÔI
+   - Lịch sử bài tập
+   - Bài đang làm dở
+   - Bài đã hoàn thành
+
+3. /cai-dat - CÀI ĐẶT TÀI KHOẢN
+   - Cập nhật thông tin
+   - Đổi avatar
+   - Đổi mật khẩu
+   - Xóa tài khoản
+
+Behavior:
+- Khi chưa login + truy cập protected route
+  → Show login modal
+  → Save intended route
+  → After login → Redirect to intended route
+
+================================================================================
+                    TECHNICAL IMPLEMENTATION
+================================================================================
+
+FRONTEND:
+- Login/Register/Reset Password modals
+- Navigation bar component (reusable)
+- Auth state management (Context/Redux/Vuex)
+- Route guards
+- Token storage (localStorage/cookies)
+- API integration
+
+BACKEND:
+- Authentication endpoints
+- Password hashing (bcrypt)
+- JWT token generation
+- Email service (password reset)
+- Session management
+- Rate limiting
+
+DATABASE:
+- students table (user data)
+- test_results table (student submissions)
+- password_resets table (reset tokens)
+
+SECURITY:
+- Password hashing
+- JWT tokens
+- HTTPS only
+- Rate limiting
+- Input validation
+- XSS/CSRF protection
+
+================================================================================
+                    USER FLOWS
+================================================================================
+
+FLOW 1: ĐĂNG KÝ MỚI
+1. User click "Đăng nhập"
+2. Click "Đăng ký ngay"
+3. Điền form đăng ký
+4. Submit → Server validates
+5. Account created → Auto login
+6. Welcome message → Redirect homepage
+
+FLOW 2: ĐĂNG NHẬP
+1. User click "Đăng nhập"
+2. Nhập email/mã số + password
+3. Submit → Server validates
+4. Token returned → Store in localStorage
+5. Update UI with user info
+6. Close modal
+
+FLOW 3: TRUY CẬP PROTECTED ROUTE
+1. User chưa login click "Kết quả"
+2. Route guard detects no auth
+3. Show login modal
+4. Save route: /ket-qua
+5. User login successfully
+6. Redirect to /ket-qua
+
+FLOW 4: QUÊN MẬT KHẨU
+1. Click "Quên mật khẩu?"
+2. Nhập email
+3. Submit → Server sends reset link
+4. User click link trong email
+5. Redirect to reset page
+6. Nhập mật khẩu mới
+7. Submit → Password updated
+8. Redirect to login
+
+FLOW 5: ĐĂNG XUẤT
+1. Click user dropdown
+2. Click "Đăng xuất"
+3. Confirm dialog (optional)
+4. Clear token from storage
+5. Clear user state
+6. Redirect to homepage
+7. Show logged out message
+
+================================================================================
+                    DESIGN CONSISTENCY
+================================================================================
+
+NAVIGATION BAR:
+- Height: 80px
+- Background: White
+- Shadow: Subtle
+- Position: Sticky (fixed khi scroll)
+- Logo left, Title center, User right
+
+USER SECTION:
+- Not logged in: Button (140x40px, blue)
+- Logged in: Avatar (35px circle) + Name + Dropdown
+
+DROPDOWN MENU:
+- 4 items
+- Width: 200px
+- White background
+- Medium shadow
+- Hover: Light gray background
+
+MODAL:
+- Width: 420px (desktop)
+- Center screen
+- White background
+- Large shadow
+- Close button top-right
+
+BUTTONS:
+- Primary: Blue (#2196F3)
+- Height: 45px
+- Border-radius: 8px or 20px
+- Hover: Darker shade
+
+INPUTS:
+- Height: 45px
+- Border: 2px solid #E0E0E0
+- Focus: Blue border
+- Icons: Left side
+- Show/hide password: Right side
+
+================================================================================
+                    RESPONSIVE BEHAVIOR
+================================================================================
+
+DESKTOP (>1024px):
+- Full navigation bar
+- Login button 140px width
+- Dropdown 200px width
+- Modal 420px width
+
+TABLET (768-1024px):
+- Slightly smaller elements
+- Modal 380px width
+
+MOBILE (<768px):
+- Logo 45px
+- Title may hide
+- Login button: Icon only or smaller
+- Hamburger menu (optional)
+- Modal 90% width, max 380px
+
+================================================================================
+                    NEXT STEPS TRIỂN KHAI
+================================================================================
+
+1. FRONTEND SETUP
+   ☐ Create navigation bar component
+   ☐ Create login modal component
+   ☐ Create register modal component
+   ☐ Create user dropdown component
+   ☐ Setup authentication context/store
+   ☐ Create route guards
+   ☐ Create protected pages (Kết quả, Bài làm, Cài đặt)
+
+2. BACKEND SETUP
+   ☐ Create authentication API endpoints
+   ☐ Setup JWT token generation
+   ☐ Create database tables
+   ☐ Implement password hashing
+   ☐ Setup email service
+   ☐ Add rate limiting
+   ☐ Add security middleware
+
+3. INTEGRATION
+   ☐ Connect frontend to backend APIs
+   ☐ Test all authentication flows
+   ☐ Test protected routes
+   ☐ Test session management
+   ☐ Test logout functionality
+
+4. TESTING
+   ☐ Unit tests for auth functions
+   ☐ Integration tests for API
+   ☐ E2E tests for user flows
+   ☐ Security testing
+   ☐ Performance testing
+
+5. DEPLOYMENT
+   ☐ Setup HTTPS
+   ☐ Configure CORS
+   ☐ Setup environment variables
+   ☐ Deploy frontend
+   ☐ Deploy backend
+   ☐ Test in production
+
+================================================================================
+                    BENEFITS CỦA HỆ THỐNG NÀY
+================================================================================
+
+CHO HỌC SINH:
+✓ Theo dõi tiến độ học tập
+✓ Xem lại kết quả kiểm tra
+✓ Cá nhân hóa trải nghiệm học
+✓ Lưu trữ bài làm
+✓ Quản lý profile
+
+CHO GIÁO VIÊN:
+✓ Theo dõi từng học sinh
+✓ Phân tích kết quả học tập
+✓ Quản lý danh sách học sinh
+✓ Gửi thông báo cá nhân
+✓ Báo cáo chi tiết
+
+CHO DỰ ÁN:
+✓ Tăng điểm đánh giá
+✓ Thể hiện kỹ năng lập trình
+✓ Hệ thống hoàn chỉnh, chuyên nghiệp
+✓ Có thể mở rộng thêm tính năng
+✓ Thực tế, có thể áp dụng
+
+================================================================================
+                    KẾT LUẬN
+================================================================================
+
+Hệ thống authentication đã được thiết kế đầy đủ với:
+✅ Login/Register/Logout functionality
+✅ Protected routes và session management
+✅ User profile pages
+✅ Navigation bar xuất hiện trên mọi trang
+✅ Responsive design cho mọi thiết bị
+✅ Security best practices
+✅ Clear user flows và documentation
+
+Tất cả thiết kế UX đã được cập nhật và documented trong:
+- 00_navigation_bar_common.txt
+- 00_student_authentication_system.txt
+- 01_trang_chu.txt (updated)
+- 02_trang_gioi_thieu_bai_hoc.txt (updated)
+
+Nhóm có thể bắt đầu triển khai dựa trên các specifications này!
+
+================================================================================
