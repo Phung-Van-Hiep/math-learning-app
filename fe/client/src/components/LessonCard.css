@@ -1,0 +1,254 @@
+.lesson-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.lesson-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Thumbnail */
+.card-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background-color: var(--gray-100);
+}
+
+.card-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.lesson-card:hover .card-thumbnail img {
+  transform: scale(1.05);
+}
+
+.thumbnail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.lesson-card:hover .thumbnail-overlay {
+  opacity: 1;
+}
+
+/* Card Content */
+.card-content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  min-height: 3.15rem;
+  transition: color var(--transition-fast);
+}
+
+.lesson-card:hover .card-title {
+  color: var(--primary-color);
+}
+
+/* Metadata */
+.card-metadata {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.separator {
+  color: var(--text-tertiary);
+}
+
+/* Rating */
+.card-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.rating-number {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.rating-count {
+  color: var(--text-secondary);
+}
+
+/* Difficulty Badge */
+.difficulty-badge {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: var(--radius-lg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.difficulty-badge.easy {
+  background-color: var(--success-color);
+}
+
+.difficulty-badge.medium {
+  background-color: var(--warning-color);
+}
+
+.difficulty-badge.hard {
+  background-color: var(--error-color);
+}
+
+/* Progress Section */
+.progress-section {
+  margin-top: auto;
+  padding-top: var(--spacing-sm);
+}
+
+.progress-dots {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.75rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.dot {
+  line-height: 1;
+}
+
+.dot.filled {
+  color: var(--primary-color);
+}
+
+.dot.empty {
+  color: var(--gray-300);
+}
+
+.progress-percentage {
+  margin-left: var(--spacing-xs);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+}
+
+/* CTA Button */
+.cta-button {
+  width: 100%;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cta-button:hover {
+  transform: scale(0.98);
+}
+
+.cta-button.start {
+  background-color: var(--primary-color);
+}
+
+.cta-button.start:hover {
+  background-color: var(--primary-hover);
+}
+
+.cta-button.continue {
+  background-color: var(--warning-color);
+}
+
+.cta-button.continue:hover {
+  background-color: #E68900;
+}
+
+.cta-button.completed {
+  background-color: var(--success-color);
+}
+
+.cta-button.completed:hover {
+  background-color: #0D9668;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1rem;
+    min-height: 2.8rem;
+  }
+
+  .card-content {
+    padding: var(--spacing-sm);
+  }
+
+  .cta-button {
+    font-size: 0.875rem;
+  }
+}
