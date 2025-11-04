@@ -6,24 +6,6 @@ MỤC ĐÍCH: Giao diện học sinh với danh sách bài học và trải nghi
 theo từng bài, với nội dung được sắp xếp linh hoạt bởi giáo viên
 
 ================================================================================
-                        THAY ĐỔI CHÍNH SO VỚI HỆ THỐNG CŨ
-================================================================================
-
-HỆ THỐNG CŨ:
-- Trang chủ có các card điều hướng đến từng phần riêng lẻ
-- Giới thiệu, Video, Nội dung, Tương tác, Kiểm tra là các trang độc lập
-- Không có khái niệm "bài học"
-- Học sinh không biết học theo trình tự nào
-
-HỆ THỐNG MỚI:
-- Trang chủ hiển thị DANH SÁCH BÀI HỌC
-- Mỗi bài học là một đơn vị học tập hoàn chỉnh
-- Khi vào một bài học, học sinh thấy tất cả nội dung theo thứ tự:
-  Giới thiệu → Video → Lý thuyết → Ví dụ → Tương tác → Bài tập → Kiểm tra
-- Thứ tự do giáo viên thiết lập
-- Học sinh có thể theo dõi tiến độ học tập
-
-================================================================================
                         CẤU TRÚC CLIENT PAGES MỚI
 ================================================================================
 

@@ -2,47 +2,6 @@
                     NEW DATABASE SCHEMA - LESSON-BASED SYSTEM
 ================================================================================
 
-MỤC ĐÍCH: Hệ thống quản lý nhiều bài học với nội dung linh hoạt và có thể sắp xếp
-
-================================================================================
-                        VẤN ĐỀ CỦA HỆ THỐNG HIỆN TẠI
-================================================================================
-
-HIỆN TẠI:
-- Introduction, Video, Content, Interactive, Assessment là các bảng độc lập
-- Không có khái niệm "bài học" (Lesson)
-- Giáo viên chỉ có thể tạo một bộ nội dung duy nhất
-- Học sinh không thể chọn bài học cụ thể
-- Không thể sắp xếp thứ tự nội dung linh hoạt
-
-HỆ QUẢ:
-- Không thể có nhiều bài học khác nhau
-- Nội dung giới thiệu, video, bài tập không liên quan đến nhau
-- Học sinh không có trải nghiệm học tập rõ ràng theo từng bài
-
-================================================================================
-                        GIẢI PHÁP: HỆ THỐNG MỚI
-================================================================================
-
-THAY ĐỔI CHÍNH:
-
-1. THÊM BẢNG LESSONS (Bài học)
-   - Mỗi bài học có: tiêu đề, mô tả, mục tiêu, cấp độ
-   - Bài học là đơn vị học tập chính
-
-2. THÊM BẢNG LESSON_CONTENT_BLOCKS (Khối nội dung bài học)
-   - Kết nối lesson với các loại nội dung
-   - Cho phép sắp xếp thứ tự hiển thị
-   - Linh hoạt trong việc tổ chức nội dung
-
-3. CẬP NHẬT CÁC BẢNG HIỆN TẠI
-   - Thêm lesson_id vào Introduction, Video, Content, Interactive
-   - Cho phép mỗi bài học có nhiều video, nhiều phần nội dung
-
-================================================================================
-                        CHI TIẾT DATABASE SCHEMA MỚI
-================================================================================
-
 1. LESSONS TABLE (Bảng bài học - MỚI)
 ┌─────────────────────────────────────────────────────────────────────┐
 │ lessons                                                              │
