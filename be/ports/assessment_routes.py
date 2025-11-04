@@ -4,7 +4,7 @@ from typing import List
 
 from services.database import get_db
 from services.models import Assessment, TestResult, Assignment, Student
-from services.schemas import AssessmentResponse, TestResultCreate, TestResultResponse, AssignmentResponse
+from be.entities.assessment_schemas import AssessmentResponse, TestResultCreate, TestResultResponse, AssignmentResponse
 from services.auth import get_current_student
 
 router = APIRouter()

@@ -11,12 +11,13 @@ from services.models import (
     Admin, Student, Video, Content, Interactive, Assessment,
     TestResult, Feedback, Introduction, ContactInfo, FAQ
 )
-from services.schemas import (
-    AdminLogin, IntroductionBase, IntroductionResponse,
-    VideoCreate, VideoResponse, ContentCreate, ContentResponse,
-    AssessmentCreate, AssessmentResponse, FeedbackResponse,
-    DashboardStats
-)
+from be.entities.auth_schemas import AdminLogin
+from be.entities.introduction_schemas import IntroductionBase, IntroductionResponse
+from be.entities.video_schemas import VideoCreate, VideoResponse
+from be.entities.content_schemas import ContentCreate, ContentResponse
+from be.entities.assessment_schemas import AssessmentCreate, AssessmentResponse
+from be.entities.feedback_schemas import FeedbackResponse
+from be.entities.dashboard_schemas import DashboardStats
 from services.auth import (
     verify_password, get_password_hash, create_access_token,
     ACCESS_TOKEN_EXPIRE_MINUTES, get_current_admin

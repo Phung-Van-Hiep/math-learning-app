@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from services.database import get_db
 from services.models import Student
-from services.schemas import StudentResponse, StudentUpdate, PasswordChange
+from be.entities.student_schemas import StudentResponse, StudentUpdate, PasswordChange
 from services.auth import get_current_student, verify_password, get_password_hash
 
 router = APIRouter()

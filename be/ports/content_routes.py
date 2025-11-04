@@ -4,7 +4,9 @@ from typing import List
 
 from services.database import get_db
 from services.models import Introduction, Video, Content, Interactive
-from services.schemas import IntroductionResponse, VideoResponse, ContentResponse
+from be.entities.introduction_schemas import IntroductionResponse
+from be.entities.video_schemas import VideoResponse
+from be.entities.content_schemas import ContentResponse
 
 router = APIRouter()
 

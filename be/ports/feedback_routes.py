@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from services.database import get_db
 from services.models import Feedback, FAQ, ContactInfo, Student
-from services.schemas import FeedbackCreate, FeedbackResponse
+from be.entities.feedback_schemas import FeedbackCreate, FeedbackResponse
 from services.auth import get_current_student
 
 router = APIRouter()

@@ -4,7 +4,8 @@ from datetime import timedelta
 
 from services.database import get_db
 from services.models import Student
-from services.schemas import StudentRegister, StudentLogin, Token, StudentResponse
+from be.entities.auth_schemas import StudentRegister, StudentLogin, Token
+from be.entities.student_schemas import StudentResponse
 from services.auth import (
     verify_password,
     get_password_hash,
