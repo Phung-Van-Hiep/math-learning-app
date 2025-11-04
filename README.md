@@ -95,7 +95,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 9532
 docker-compose up -d
 
 # .env file already configured for Docker
-DATABASE_URL=mysql+pymysql://thcs_user:thcs_password_change_this@localhost:3306/thcs_math
+DATABASE_URL=mysql+pymysql://thcs_user:thcs_password_change_this@localhost:3307/thcs_math
 ```
 📖 [Docker Setup Guide](DOCKER_SETUP.md)
 
