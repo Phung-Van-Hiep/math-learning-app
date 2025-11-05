@@ -1,0 +1,284 @@
+import React, { useState, useEffect } from 'react';
+import QuizQuestion from './QuizQuestion';
+import QuizResults from './QuizResults';
+import quizService from '../services/quizService';
+import './QuizSection.css';
+
+const QuizSection = ({ lessonId, onQuizComplete }) => {
+  const [quiz, setQuiz] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [quizStartTime, setQuizStartTime] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quizResults, setQuizResults] = useState(null);
+  const [showResults, setShowResults] = useState(false);
+  const [previousAttempts, setPreviousAttempts] = useState([]);
+
+  // Load quiz and previous attempts
+  useEffect(() => {
+    loadQuiz();
+  }, [lessonId]);
+
+  // Timer
+  useEffect(() => {
+    if (quizStartTime && !showResults) {
+      const interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - quizStartTime) / 1000);
+        setTimeSpent(elapsed);
+
+        // Check if time limit exceeded
+        if (quiz?.duration && elapsed >= quiz.duration * 60) {
+          handleSubmit();
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [quizStartTime, showResults, quiz]);
+
+  const loadQuiz = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Load quiz
+      const quizData = await quizService.getLessonQuiz(lessonId);
+      setQuiz(quizData);
+
+      // Load previous attempts
+      try {
+        const attempts = await quizService.getMyAttempts(quizData.id);
+        setPreviousAttempts(attempts);
+      } catch (err) {
+        console.log('No previous attempts found');
+      }
+
+      // Start timer
+      setQuizStartTime(Date.now());
+    } catch (err) {
+      console.error('Error loading quiz:', err);
+      setError(err.response?.data?.detail || 'No quiz available for this lesson');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAnswerChange = (questionId, answer) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    // Check if all questions are answered
+    const unansweredQuestions = quiz.questions.filter(
+      q => !answers[q.id] || answers[q.id] === ''
+    );
+
+    if (unansweredQuestions.length > 0) {
+      const confirm = window.confirm(
+        `You have ${unansweredQuestions.length} unanswered question(s). Do you want to submit anyway?`
+      );
+      if (!confirm) return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const submitData = {
+        answers: answers,
+        time_spent: timeSpent
+      };
+
+      const results = await quizService.submitQuiz(quiz.id, submitData);
+      setQuizResults(results);
+      setShowResults(true);
+
+      // Notify parent component
+      if (onQuizComplete) {
+        onQuizComplete(results);
+      }
+    } catch (err) {
+      console.error('Error submitting quiz:', err);
+      alert('Failed to submit quiz. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRetake = () => {
+    setAnswers({});
+    setCurrentQuestionIndex(0);
+    setTimeSpent(0);
+    setQuizStartTime(Date.now());
+    setShowResults(false);
+    setQuizResults(null);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getAnsweredCount = () => {
+    return Object.values(answers).filter(a => a !== null && a !== '').length;
+  };
+
+  const getProgressPercentage = () => {
+    return Math.round((getAnsweredCount() / quiz.questions.length) * 100);
+  };
+
+  if (loading) {
+    return (
+      <div className="quiz-section loading">
+        <div className="spinner"></div>
+        <p>Loading quiz...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="quiz-section error">
+        <div className="error-icon">📝</div>
+        <h3>No Quiz Available</h3>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (showResults && quizResults) {
+    return (
+      <QuizResults
+        results={quizResults}
+        quiz={quiz}
+        answers={answers}
+        onRetake={handleRetake}
+        previousAttempts={previousAttempts}
+      />
+    );
+  }
+
+  const currentQuestion = quiz.questions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
+
+  return (
+    <div className="quiz-section">
+      {/* Quiz Header */}
+      <div className="quiz-header">
+        <div className="quiz-title-section">
+          <h2>{quiz.title}</h2>
+          {quiz.description && <p className="quiz-description">{quiz.description}</p>}
+        </div>
+
+        <div className="quiz-meta">
+          <div className="quiz-meta-item">
+            ⏱ {formatTime(timeSpent)}{quiz.duration && ` / ${quiz.duration}:00`}
+          </div>
+          <div className="quiz-meta-item">
+            📊 {getAnsweredCount()} / {quiz.questions.length}
+          </div>
+          <div className="quiz-meta-item">
+            🎯 Pass: {quiz.passing_score}%
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="quiz-progress-bar">
+        <div
+          className="quiz-progress-fill"
+          style={{ width: `${getProgressPercentage()}%` }}
+        />
+      </div>
+
+      {/* Question Navigation Dots */}
+      <div className="question-navigation">
+        {quiz.questions.map((q, index) => (
+          <button
+            key={q.id}
+            className={`nav-dot ${index === currentQuestionIndex ? 'active' : ''} ${
+              answers[q.id] ? 'answered' : ''
+            }`}
+            onClick={() => setCurrentQuestionIndex(index)}
+            title={`Question ${index + 1}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Current Question */}
+      <QuizQuestion
+        question={currentQuestion}
+        questionNumber={currentQuestionIndex + 1}
+        selectedAnswer={answers[currentQuestion.id]}
+        onAnswerChange={handleAnswerChange}
+        showResult={false}
+      />
+
+      {/* Navigation Buttons */}
+      <div className="quiz-navigation">
+        <button
+          className="btn btn-secondary"
+          onClick={handlePreviousQuestion}
+          disabled={currentQuestionIndex === 0}
+        >
+          ← Previous
+        </button>
+
+        <div className="nav-center">
+          <span className="question-counter">
+            Question {currentQuestionIndex + 1} of {quiz.questions.length}
+          </span>
+        </div>
+
+        {!isLastQuestion ? (
+          <button
+            className="btn btn-primary"
+            onClick={handleNextQuestion}
+          >
+            Next →
+          </button>
+        ) : (
+          <button
+            className="btn btn-success"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
+          </button>
+        )}
+      </div>
+
+      {/* Previous Attempts Info */}
+      {previousAttempts.length > 0 && (
+        <div className="previous-attempts-info">
+          <p>
+            📊 You've attempted this quiz {previousAttempts.length} time(s).
+            Best score: {Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}%
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default QuizSection;

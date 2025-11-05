@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import lessonService from '../services/lessonService';
+import QuizSection from '../components/QuizSection';
 import './LessonDetail.css';
 
 const LessonDetail = () => {
@@ -18,6 +19,41 @@ const LessonDetail = () => {
   useEffect(() => {
     fetchLesson();
   }, [slug]);
+
+  // Scroll tracking effect - updates active section based on scroll position
+  useEffect(() => {
+    if (!lesson) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px', // Trigger when section enters top 20% of viewport
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Extract section index from element id (format: "section-0", "section-1", etc.)
+          const sectionId = entry.target.id;
+          const index = parseInt(sectionId.split('-')[1]);
+          if (!isNaN(index)) {
+            setActiveSection(index);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe all section elements
+    const sectionElements = document.querySelectorAll('[id^="section-"]');
+    sectionElements.forEach((element) => observer.observe(element));
+
+    // Cleanup
+    return () => {
+      sectionElements.forEach((element) => observer.unobserve(element));
+    };
+  }, [lesson]);
 
   const fetchLesson = async () => {
     try {
@@ -47,6 +83,14 @@ const LessonDetail = () => {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // Auto-scroll sidebar to show active item
+  useEffect(() => {
+    const activeSidebarItem = document.querySelector('.sidebar-item.active');
+    if (activeSidebarItem) {
+      activeSidebarItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeSection]);
 
   const handleMarkComplete = async (sectionIndex) => {
     const newCompleted = new Set(completedSections);
@@ -121,6 +165,13 @@ const LessonDetail = () => {
       type: 'content',
       title: 'Nội dung chi tiết',
       content: lesson.content || '',
+      icon: '📝'
+    },
+    {
+      id: 3,
+      type: 'quiz',
+      title: 'Bài kiểm tra',
+      content: '',
       icon: '📝'
     }
   ];
@@ -232,6 +283,30 @@ const LessonDetail = () => {
           </div>
         );
 
+      case 'quiz':
+        return (
+          <div className="content-block quiz-block">
+            <div className="block-header">
+              <div className="block-title">
+                <span className="block-icon">📝</span>
+                <h2>BÀI KIỂM TRA</h2>
+              </div>
+            </div>
+            <div className="block-divider"></div>
+            <div className="block-content">
+              <QuizSection
+                lessonId={lesson.id}
+                onQuizComplete={(results) => {
+                  // Mark quiz section as complete if passed
+                  if (results.passed && !completedSections.has(section.id)) {
+                    handleMarkComplete(section.id);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -263,40 +338,21 @@ const LessonDetail = () => {
     <div className="lesson-detail">
       {/* Lesson Header */}
       <div className="lesson-header">
-        <button className="back-button" onClick={() => navigate('/')}>
-          ← Quay lại danh sách
-        </button>
+        <div className="header-content">
+          <button className="back-button" onClick={() => navigate('/')}>
+            ← Quay lại
+          </button>
 
-        <div className="lesson-title-section">
-          <h1>
-            <span className="lesson-icon">📚</span>
-            {lesson.title}
-          </h1>
-          <div className="lesson-metadata">
-            <span>Lớp {lesson.grade}</span>
-            <span>•</span>
-            <span>⏱ {lesson.duration} phút</span>
-            <span>•</span>
-            <span>⭐ {lesson.rating} ({lesson.review_count} đánh giá)</span>
+          <div className="header-main">
+            <h1 className="lesson-title">{lesson.title}</h1>
+            <div className="lesson-metadata">
+              <span className="metadata-item">📚 Lớp {lesson.grade}</span>
+              <span className="metadata-item">⏱ {lesson.duration} phút</span>
+              <span className="metadata-item">
+                <span className="progress-badge">{progress}%</span>
+              </span>
+            </div>
           </div>
-        </div>
-
-        <div className="progress-section">
-          <div className="progress-text">
-            {'●'.repeat(Math.floor(progress / 10))}{'○'.repeat(10 - Math.floor(progress / 10))} {progress}% hoàn thành
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-          </div>
-          <div className="progress-time">
-            Bạn đã học: {timeSpent}/{lesson.duration} phút
-          </div>
-        </div>
-
-        <div className="action-buttons">
-          <button className="action-btn">📥 Lưu</button>
-          <button className="action-btn">⭐ Đánh giá</button>
-          <button className="action-btn">📤 Chia sẻ</button>
         </div>
       </div>
 
@@ -321,8 +377,21 @@ const LessonDetail = () => {
           </div>
           <div className="sidebar-footer">
             <div className="progress-summary">
-              <div>⏱ {timeSpent}/{lesson.duration} phút</div>
-              <div>{'●'.repeat(Math.floor(progress / 10))}{'○'.repeat(10 - Math.floor(progress / 10))} {progress}%</div>
+              <div className="progress-title">Tiến độ học tập</div>
+              <div className="progress-bar-container">
+                <div className="progress-bar-sidebar">
+                  <div className="progress-fill-sidebar" style={{ width: `${progress}%` }}></div>
+                </div>
+                <span className="progress-percentage">{progress}%</span>
+              </div>
+              <div className="progress-details">
+                <div className="progress-detail-item">
+                  ✓ Hoàn thành: {completedSections.size}/{sections.length} phần
+                </div>
+                <div className="progress-detail-item">
+                  ⏱ Thời gian: {timeSpent}/{lesson.duration} phút
+                </div>
+              </div>
             </div>
           </div>
         </aside>

@@ -9,7 +9,7 @@ from core.config import settings
 from core.database import init_db
 
 # Import routers
-from routes import auth, lessons
+from routes import auth, lessons, quiz
 
 
 @asynccontextmanager
@@ -56,6 +56,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(lessons.router, prefix="/api")
+app.include_router(quiz.router, prefix="/api")
 
 
 @app.get("/")

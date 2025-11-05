@@ -4,7 +4,7 @@ Authentication middleware and dependencies
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from core.database import get_db
 from entities.user import User, UserRole
@@ -131,3 +131,21 @@ async def get_current_student_user(
             detail="Student access required"
         )
     return current_user
+
+
+def require_role(roles: List[UserRole]):
+    """
+    Dependency factory to check if user has required role
+    Args:
+        roles: List of allowed user roles
+    Returns:
+        Dependency function that checks user role
+    """
+    async def role_checker(current_user: User = Depends(get_current_active_user)) -> User:
+        if current_user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required roles: {', '.join([r.value for r in roles])}"
+            )
+        return current_user
+    return role_checker
