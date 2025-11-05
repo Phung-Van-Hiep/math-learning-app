@@ -336,22 +336,19 @@ const LessonDetail = () => {
 
   return (
     <div className="lesson-detail">
-      {/* Lesson Header */}
+      {/* Lesson Header - Single Row */}
       <div className="lesson-header">
         <div className="header-content">
           <button className="back-button" onClick={() => navigate('/')}>
             ← Quay lại
           </button>
-
-          <div className="header-main">
-            <h1 className="lesson-title">{lesson.title}</h1>
-            <div className="lesson-metadata">
-              <span className="metadata-item">📚 Lớp {lesson.grade}</span>
-              <span className="metadata-item">⏱ {lesson.duration} phút</span>
-              <span className="metadata-item">
-                <span className="progress-badge">{progress}%</span>
-              </span>
-            </div>
+          <h1 className="lesson-title">{lesson.title}</h1>
+          <div className="lesson-metadata">
+            <span className="metadata-item">Lớp {lesson.grade}</span>
+            <span className="metadata-separator">•</span>
+            <span className="metadata-item">{lesson.duration} phút</span>
+            <span className="metadata-separator">•</span>
+            <span className="progress-badge">{progress}%</span>
           </div>
         </div>
       </div>
