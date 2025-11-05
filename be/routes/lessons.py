@@ -177,6 +177,8 @@ async def delete_lesson(
 async def update_lesson_progress(
     lesson_id: int,
     progress_percentage: float = Query(..., ge=0, le=100),
+    completed_sections: Optional[str] = Query(None),  # Comma-separated section IDs
+    time_spent: Optional[int] = Query(None, ge=0),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_student_user)
 ):
@@ -185,16 +187,29 @@ async def update_lesson_progress(
 
     - **lesson_id**: Lesson ID
     - **progress_percentage**: Progress percentage (0-100)
+    - **completed_sections**: Optional comma-separated list of completed section IDs
+    - **time_spent**: Optional time spent in seconds
     """
+    # Parse completed sections if provided
+    sections_list = None
+    if completed_sections:
+        try:
+            sections_list = [int(s.strip()) for s in completed_sections.split(',') if s.strip()]
+        except ValueError:
+            pass  # Ignore invalid format
+
     progress = LessonService.update_lesson_progress(
         db,
         user_id=current_user.id,
         lesson_id=lesson_id,
-        progress_percentage=progress_percentage
+        progress_percentage=progress_percentage,
+        completed_sections=sections_list,
+        time_spent=time_spent
     )
 
     return {
         "message": "Progress updated successfully",
         "progress_percentage": progress.progress_percentage,
-        "is_completed": progress.is_completed
+        "is_completed": progress.is_completed,
+        "time_spent": progress.time_spent
     }

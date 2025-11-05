@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from schemas.user import UserCreate, UserLogin, LoginResponse, UserResponse
+from schemas.user_settings import UserSettingsUpdate, PasswordChange
 from services.auth_service import AuthService
 from middleware.auth import get_current_active_user
 from entities.user import User
@@ -102,3 +103,83 @@ async def verify_token(current_user: User = Depends(get_current_active_user)):
         "role": current_user.role,
         "is_active": current_user.is_active
     }
+
+@router.put("/settings", response_model=UserResponse)
+async def update_settings(
+    settings: UserSettingsUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Update user settings/profile
+
+    - **full_name**: Update full name
+    - **email**: Update email (must be unique)
+    - **grade**: Update grade (students only)
+    - **class_name**: Update class name (students only)
+    """
+    from sqlalchemy.exc import IntegrityError
+
+    try:
+        # Update fields if provided
+        if settings.full_name:
+            current_user.full_name = settings.full_name
+        if settings.email:
+            # Check if email is already taken by another user
+            existing = db.query(User).filter(
+                User.email == settings.email,
+                User.id != current_user.id
+            ).first()
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email already taken"
+                )
+            current_user.email = settings.email
+        if settings.grade is not None:
+            current_user.grade = settings.grade
+        if settings.class_name is not None:
+            current_user.class_name = settings.class_name
+
+        db.commit()
+        db.refresh(current_user)
+        return current_user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already exists"
+        )
+
+
+@router.post("/change-password")
+async def change_password(
+    password_data: PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Change user password
+
+    - **current_password**: Current password for verification
+    - **new_password**: New password
+    """
+    # Verify current password
+    if not AuthService.verify_password(password_data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    # Validate new password
+    if len(password_data.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 6 characters long"
+        )
+
+    # Hash and update password
+    current_user.hashed_password = AuthService.get_password_hash(password_data.new_password)
+    db.commit()
+
+    return {"message": "Password changed successfully"}

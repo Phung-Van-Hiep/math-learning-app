@@ -11,7 +11,7 @@ from core.config import settings
 from core.database import init_db
 
 # Import routers
-from routes import auth, lessons, quiz, upload
+from routes import auth, lessons, quiz, upload, feedback
 
 
 @asynccontextmanager
@@ -60,6 +60,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(lessons.router, prefix="/api")
 app.include_router(quiz.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
+app.include_router(feedback.router, prefix="/api")
 
 # Mount static files for uploads
 uploads_dir = Path("uploads")

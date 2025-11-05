@@ -3,6 +3,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import LessonDetail from './pages/LessonDetail';
+import ProgressDashboard from './pages/ProgressDashboard';
+import ResultsPage from './pages/ResultsPage';
+import FeedbackPage from './pages/FeedbackPage';
+import SettingsPage from './pages/SettingsPage';
 import './App.css';
 
 // Protected Route Component
@@ -48,6 +52,38 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <LessonDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <ProtectedRoute>
+            <ProgressDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/results"
+        element={
+          <ProtectedRoute>
+            <ResultsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/feedback"
+        element={
+          <ProtectedRoute>
+            <FeedbackPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         }
       />

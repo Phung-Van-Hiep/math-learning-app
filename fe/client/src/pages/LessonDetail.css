@@ -671,3 +671,87 @@
 .error-container button:hover {
   background: var(--primary-hover);
 }
+
+/* Video Progress Tracking */
+.video-progress-hint {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e8f4f8 100%);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.video-progress-hint p {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.video-progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.video-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #5b8def 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.video-progress-text {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  display: block;
+  text-align: right;
+}
+
+.auto-complete-btn {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  display: block;
+  width: 100%;
+}
+
+.auto-complete-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.auto-complete-btn:active {
+  transform: translateY(0);
+}
+
+/* Progress Detail Items */
+.progress-detail-item {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-detail-item:last-child {
+  color: var(--success-color);
+  font-weight: 500;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}

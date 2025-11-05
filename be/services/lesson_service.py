@@ -136,6 +136,18 @@ class LessonService:
                 lesson_data.progress = progress.progress_percentage
                 lesson_data.is_completed = progress.is_completed
 
+                # Parse completed sections if available
+                if progress.completed_sections:
+                    import json
+                    try:
+                        lesson_data.completed_sections = json.loads(progress.completed_sections)
+                    except:
+                        lesson_data.completed_sections = []
+                else:
+                    lesson_data.completed_sections = []
+            else:
+                lesson_data.completed_sections = []
+
             result.append(lesson_data)
 
         return result
@@ -168,7 +180,9 @@ class LessonService:
         db: Session,
         user_id: int,
         lesson_id: int,
-        progress_percentage: float
+        progress_percentage: float,
+        completed_sections: list = None,
+        time_spent: int = None
     ) -> StudentProgress:
         """
         Update student progress for a lesson
@@ -177,6 +191,8 @@ class LessonService:
             user_id: Student user ID
             lesson_id: Lesson ID
             progress_percentage: Progress percentage (0-100)
+            completed_sections: List of completed section IDs (optional)
+            time_spent: Time spent in seconds (optional)
         Returns:
             Updated or created StudentProgress
         """
@@ -196,6 +212,15 @@ class LessonService:
         # Update progress
         progress.progress_percentage = min(progress_percentage, 100.0)
         progress.is_completed = progress.progress_percentage >= 100.0
+
+        # Update completed sections if provided
+        if completed_sections is not None:
+            import json
+            progress.completed_sections = json.dumps(completed_sections)
+
+        # Update time spent if provided
+        if time_spent is not None:
+            progress.time_spent = time_spent
 
         if progress.is_completed and not progress.completed_at:
             from datetime import datetime

@@ -15,10 +15,73 @@ const LessonDetail = () => {
   const [progress, setProgress] = useState(0);
   const [activeSection, setActiveSection] = useState(0);
   const [completedSections, setCompletedSections] = useState(new Set());
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [contentScrollProgress, setContentScrollProgress] = useState({});
+  const [timeSpentInSeconds, setTimeSpentInSeconds] = useState(0);
 
   useEffect(() => {
     fetchLesson();
+    loadLocalProgress();
   }, [slug]);
+
+  // Load progress from localStorage (per-device backup)
+  const loadLocalProgress = () => {
+    if (!user) return;
+
+    try {
+      const key = `lesson_progress_${user.id}_${slug}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.completedSections) {
+          setCompletedSections(new Set(data.completedSections));
+        }
+        if (data.progress) {
+          setProgress(data.progress);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading local progress:', error);
+    }
+  };
+
+  // Save progress to localStorage (per-device backup)
+  const saveLocalProgress = (progressData) => {
+    if (!user) return;
+
+    try {
+      const key = `lesson_progress_${user.id}_${slug}`;
+      localStorage.setItem(key, JSON.stringify({
+        completedSections: Array.from(progressData.completedSections),
+        progress: progressData.progress,
+        timestamp: new Date().toISOString()
+      }));
+    } catch (error) {
+      console.error('Error saving local progress:', error);
+    }
+  };
+
+  // Time tracking effect - increments every second while page is active
+  useEffect(() => {
+    if (!lesson || !user) return;
+
+    const timer = setInterval(() => {
+      setTimeSpentInSeconds(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [lesson, user]);
+
+  // Auto-save progress periodically (every 30 seconds)
+  useEffect(() => {
+    if (!lesson || !user || progress === 0) return;
+
+    const autoSaveTimer = setInterval(() => {
+      saveProgressToBackend();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(autoSaveTimer);
+  }, [lesson, user, progress]);
 
   // Scroll tracking effect - updates active section based on scroll position
   useEffect(() => {
@@ -58,14 +121,50 @@ const LessonDetail = () => {
   const fetchLesson = async () => {
     try {
       setLoading(true);
-      const data = await lessonService.getLessonBySlug(slug);
+
+      // Fetch lesson with progress from backend
+      const data = user
+        ? await lessonService.getLessonWithProgress(slug)
+        : await lessonService.getLessonBySlug(slug);
+
       setLesson(data);
 
-      // Calculate progress from completed sections
+      // Load saved progress from backend
+      if (user && data.progress !== undefined) {
+        setProgress(data.progress);
+
+        // Load completed sections from backend if available
+        if (data.completed_sections && Array.isArray(data.completed_sections)) {
+          setCompletedSections(new Set(data.completed_sections));
+          console.log('✓ Loaded progress from backend:', {
+            progress: data.progress + '%',
+            sections: data.completed_sections.length
+          });
+        } else {
+          // Fallback: estimate based on progress percentage
+          const sections = data.content_blocks || [
+            { id: 0, type: 'intro' },
+            { id: 1, type: 'video' },
+            { id: 2, type: 'content' },
+            { id: 3, type: 'quiz' }
+          ];
+
+          const numToComplete = Math.floor((data.progress / 100) * sections.length);
+          const completed = new Set();
+          for (let i = 0; i < numToComplete; i++) {
+            completed.add(sections[i].id);
+          }
+          setCompletedSections(completed);
+        }
+      }
+
+      // Load from content_blocks if available
       if (data.content_blocks) {
         const completed = data.content_blocks.filter(block => block.completed).length;
-        setProgress(Math.round((completed / data.content_blocks.length) * 100));
-        setCompletedSections(new Set(data.content_blocks.filter(b => b.completed).map(b => b.id)));
+        if (completed > 0) {
+          setProgress(Math.round((completed / data.content_blocks.length) * 100));
+          setCompletedSections(new Set(data.content_blocks.filter(b => b.completed).map(b => b.id)));
+        }
       }
     } catch (error) {
       console.error('Error fetching lesson:', error);
@@ -92,20 +191,110 @@ const LessonDetail = () => {
     }
   }, [activeSection]);
 
+  // Calculate overall progress based on multiple factors
+  const calculateProgress = (newCompletedSections) => {
+    if (!lesson) return 0;
+
+    const sections = lesson.content_blocks || [
+      { id: 0, type: 'intro' },
+      { id: 1, type: 'video' },
+      { id: 2, type: 'content' },
+      { id: 3, type: 'quiz' }
+    ];
+
+    // Weight different section types
+    const weights = {
+      intro: 10,
+      video: 30,
+      content: 40,
+      quiz: 20
+    };
+
+    let totalWeight = 0;
+    let completedWeight = 0;
+
+    sections.forEach((section) => {
+      const weight = weights[section.type] || 25;
+      totalWeight += weight;
+
+      if (newCompletedSections.has(section.id)) {
+        completedWeight += weight;
+      } else if (section.type === 'video' && videoProgress > 0) {
+        // Partial credit for video watching
+        completedWeight += (videoProgress / 100) * weight;
+      } else if (section.type === 'content' && contentScrollProgress[section.id]) {
+        // Partial credit for content scrolling
+        completedWeight += contentScrollProgress[section.id] * weight;
+      }
+    });
+
+    return Math.min(Math.round((completedWeight / totalWeight) * 100), 100);
+  };
+
+  // Save progress to backend
+  const saveProgressToBackend = async () => {
+    if (!user || !lesson) return;
+
+    try {
+      // Convert Set to Array for API
+      const sectionsArray = Array.from(completedSections);
+
+      await lessonService.updateProgress(
+        lesson.id,
+        progress,
+        sectionsArray,
+        timeSpentInSeconds
+      );
+
+      // Also save to localStorage
+      saveLocalProgress({
+        completedSections,
+        progress
+      });
+
+      console.log('✓ Progress saved:', {
+        progress: progress + '%',
+        sections: sectionsArray.length,
+        time: Math.floor(timeSpentInSeconds / 60) + 'min'
+      });
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      // Even if backend fails, save to localStorage
+      saveLocalProgress({
+        completedSections,
+        progress
+      });
+    }
+  };
+
   const handleMarkComplete = async (sectionIndex) => {
     const newCompleted = new Set(completedSections);
     newCompleted.add(sectionIndex);
     setCompletedSections(newCompleted);
 
-    const newProgress = Math.round((newCompleted.size / sections.length) * 100);
+    const newProgress = calculateProgress(newCompleted);
     setProgress(newProgress);
 
-    // Update progress on backend
-    if (user) {
+    // Save to localStorage immediately
+    saveLocalProgress({
+      completedSections: newCompleted,
+      progress: newProgress
+    });
+
+    // Update progress on backend immediately when marking complete
+    if (user && lesson) {
       try {
-        await lessonService.updateProgress(lesson.id, newProgress);
+        const sectionsArray = Array.from(newCompleted);
+        await lessonService.updateProgress(
+          lesson.id,
+          newProgress,
+          sectionsArray,
+          timeSpentInSeconds
+        );
+        console.log('✓ Progress saved to backend:', newProgress + '%');
       } catch (error) {
         console.error('Error updating progress:', error);
+        // Progress is still saved in localStorage
       }
     }
   };
@@ -246,7 +435,20 @@ const LessonDetail = () => {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    onLoad={(e) => {
+                      // Track when video iframe is loaded
+                      console.log('Video loaded');
+                    }}
                   ></iframe>
+                  {videoProgress < 100 && (
+                    <div className="video-progress-hint">
+                      <p>💡 Xem hết video để tự động đánh dấu hoàn thành phần này</p>
+                      <div className="video-progress-bar">
+                        <div className="video-progress-fill" style={{ width: `${videoProgress}%` }}></div>
+                      </div>
+                      <span className="video-progress-text">{videoProgress}% đã xem</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="no-video">
@@ -261,6 +463,14 @@ const LessonDetail = () => {
                   <li>Có thể tạm dừng và ghi chú khi cần</li>
                   <li>Xem lại nhiều lần để nắm vững</li>
                 </ul>
+                {videoProgress >= 80 && !completedSections.has(section.id) && (
+                  <button
+                    className="auto-complete-btn"
+                    onClick={() => handleMarkComplete(section.id)}
+                  >
+                    ✓ Bạn đã xem video - Click để hoàn thành phần này
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -332,7 +542,8 @@ const LessonDetail = () => {
     return url;
   };
 
-  const timeSpent = Math.floor((progress / 100) * lesson.duration);
+  const timeSpentMinutes = Math.floor(timeSpentInSeconds / 60);
+  const displayTimeSpent = timeSpentMinutes > lesson.duration ? lesson.duration : timeSpentMinutes;
 
   return (
     <div className="lesson-detail">
@@ -386,8 +597,13 @@ const LessonDetail = () => {
                   ✓ Hoàn thành: {completedSections.size}/{sections.length} phần
                 </div>
                 <div className="progress-detail-item">
-                  ⏱ Thời gian: {timeSpent}/{lesson.duration} phút
+                  ⏱ Thời gian học: {displayTimeSpent} phút
                 </div>
+                {user && progress > 0 && (
+                  <div className="progress-detail-item">
+                    💾 Tiến độ được lưu tự động
+                  </div>
+                )}
               </div>
             </div>
           </div>

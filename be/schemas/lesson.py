@@ -2,7 +2,7 @@
 Lesson Pydantic schemas
 """
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from entities.lesson import LessonDifficulty
 
@@ -79,6 +79,7 @@ class LessonWithProgress(LessonListResponse):
     """Schema for lesson with student progress"""
     progress: float = 0.0  # 0-100
     is_completed: bool = False
+    completed_sections: Optional[List[int]] = []  # List of completed section IDs
 
     class Config:
         from_attributes = True

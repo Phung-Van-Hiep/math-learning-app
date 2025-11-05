@@ -39,10 +39,15 @@ const HomePage = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch lessons with progress for students
-      const data = user?.role === 'student'
-        ? await lessonService.getMyLessons()
-        : await lessonService.getPublishedLessons();
+      // Fetch lessons based on user role
+      let data;
+      if (user?.role === 'student') {
+        data = await lessonService.getMyLessons();
+      } else if (user?.role === 'teacher' || user?.role === 'admin') {
+        data = await lessonService.getAllLessons();
+      } else {
+        data = await lessonService.getPublishedLessons();
+      }
 
       // Transform data to match frontend format
       const transformedLessons = data.map((lesson) => ({

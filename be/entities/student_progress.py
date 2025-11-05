@@ -1,7 +1,7 @@
 """
 Student Progress entity - tracks lesson completion
 """
-from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Boolean, JSON, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -20,6 +20,9 @@ class StudentProgress(Base):
     progress_percentage = Column(Float, default=0.0)  # 0-100
     is_completed = Column(Boolean, default=False)
     time_spent = Column(Integer, default=0)  # in seconds
+
+    # Section-level tracking (stores list of completed section IDs as JSON)
+    completed_sections = Column(Text, nullable=True)  # JSON array as string
 
     # Scores
     quiz_score = Column(Float, nullable=True)  # Best quiz score
