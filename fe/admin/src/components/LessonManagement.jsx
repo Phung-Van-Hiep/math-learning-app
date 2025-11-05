@@ -7,6 +7,10 @@ const LessonManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
+  const [thumbnailMode, setThumbnailMode] = useState('url'); // 'url' or 'upload'
+  const [videoMode, setVideoMode] = useState('url'); // 'url' or 'upload'
+  const [slugExists, setSlugExists] = useState(false);
+  const [checkingSlug, setCheckingSlug] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -37,12 +41,93 @@ const LessonManagement = () => {
     }
   };
 
+  // Auto-generate slug from title
+  const generateSlug = (title) => {
+    return title
+      .toLowerCase()
+      .normalize('NFD') // Normalize to decomposed form
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/đ/g, 'd') // Replace Vietnamese đ
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+  };
+
+  // Check if slug exists in database
+  const checkSlugUniqueness = async (slug) => {
+    if (!slug || slug === editingLesson?.slug) {
+      setSlugExists(false);
+      return;
+    }
+
+    setCheckingSlug(true);
+    try {
+      // Check if any lesson has this slug
+      const existingLesson = lessons.find(lesson =>
+        lesson.slug === slug && lesson.id !== editingLesson?.id
+      );
+      setSlugExists(!!existingLesson);
+    } catch (error) {
+      console.error('Error checking slug:', error);
+    } finally {
+      setCheckingSlug(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue,
     }));
+
+    // Auto-generate slug when title changes
+    if (name === 'title' && !editingLesson) {
+      const slug = generateSlug(value);
+      setFormData((prev) => ({
+        ...prev,
+        slug: slug,
+      }));
+      // Check slug uniqueness
+      checkSlugUniqueness(slug);
+    }
+
+    // Check slug uniqueness when slug is manually edited
+    if (name === 'slug') {
+      checkSlugUniqueness(value);
+    }
+  };
+
+  const handleFileUpload = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // For now, we'll use a simple placeholder
+    // In production, you'd upload to a server or cloud storage
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (type === 'thumbnail') {
+        setFormData((prev) => ({
+          ...prev,
+          thumbnail: reader.result, // Base64 for preview (or upload to server and get URL)
+        }));
+      } else if (type === 'video') {
+        setFormData((prev) => ({
+          ...prev,
+          video_url: URL.createObjectURL(file), // Or upload to server
+        }));
+      }
+    };
+
+    if (type === 'thumbnail') {
+      reader.readAsDataURL(file);
+    }
+
+    // TODO: Implement actual file upload to server
+    alert('Tính năng upload file sẽ được bổ sung. Hiện tại vui lòng sử dụng URL.');
   };
 
   const handleSubmit = async (e) => {
@@ -158,14 +243,58 @@ const LessonManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>Slug *</label>
+                <label>
+                  Slug *
+                  <span className="field-hint-icon" title="Click để xem hướng dẫn">
+                    💡
+                    <span className="tooltip">
+                      <strong>Slug là gì?</strong><br/>
+                      Đường dẫn URL thân thiện, tự động tạo từ tiêu đề.<br/><br/>
+                      <strong>Quy tắc:</strong><br/>
+                      • Chỉ dùng chữ thường (a-z)<br/>
+                      • Chỉ dùng số (0-9)<br/>
+                      • Dùng dấu gạch ngang (-)<br/>
+                      • Không dấu tiếng Việt<br/>
+                      • Không khoảng trắng<br/><br/>
+                      <strong>Ví dụ:</strong><br/>
+                      "Phương trình bậc hai" → "phuong-trinh-bac-hai"
+                    </span>
+                  </span>
+                </label>
                 <input
                   type="text"
                   name="slug"
                   value={formData.slug}
                   onChange={handleInputChange}
                   required
+                  placeholder="phuong-trinh-bac-nhat"
+                  className={slugExists ? 'input-error' : checkingSlug ? 'input-checking' : ''}
                 />
+
+                {/* URL Preview */}
+                {formData.slug && (
+                  <div className="url-preview">
+                    <span className="url-label">🔗 URL của bài học:</span>
+                    <code className="url-value">
+                      {window.location.origin}/lessons/{formData.slug}
+                    </code>
+                  </div>
+                )}
+
+                {/* Slug validation feedback */}
+                {checkingSlug && (
+                  <small className="field-feedback checking">⏳ Đang kiểm tra...</small>
+                )}
+                {slugExists && (
+                  <small className="field-feedback error">
+                    ❌ Slug này đã tồn tại! Vui lòng chọn slug khác.
+                  </small>
+                )}
+                {!checkingSlug && !slugExists && formData.slug && (
+                  <small className="field-feedback success">
+                    ✅ Slug hợp lệ và chưa được sử dụng
+                  </small>
+                )}
               </div>
             </div>
 
@@ -222,26 +351,116 @@ const LessonManagement = () => {
               </div>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Thumbnail URL</label>
-                <input
-                  type="url"
-                  name="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={handleInputChange}
-                />
+            {/* Thumbnail Section */}
+            <div className="form-group">
+              <label>
+                Ảnh bìa (Thumbnail)
+                <span className="field-hint">🖼️</span>
+              </label>
+
+              <div className="input-mode-toggle">
+                <button
+                  type="button"
+                  className={`mode-btn ${thumbnailMode === 'url' ? 'active' : ''}`}
+                  onClick={() => setThumbnailMode('url')}
+                >
+                  🔗 Dùng đường dẫn URL
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${thumbnailMode === 'upload' ? 'active' : ''}`}
+                  onClick={() => setThumbnailMode('upload')}
+                >
+                  📤 Tải ảnh lên
+                </button>
               </div>
 
-              <div className="form-group">
-                <label>Video URL</label>
-                <input
-                  type="url"
-                  name="video_url"
-                  value={formData.video_url}
-                  onChange={handleInputChange}
-                />
+              {thumbnailMode === 'url' ? (
+                <>
+                  <input
+                    type="url"
+                    name="thumbnail"
+                    value={formData.thumbnail}
+                    onChange={handleInputChange}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                  <small className="field-description">
+                    Nhập đường dẫn URL của ảnh bìa. Ví dụ: https://imgur.com/abc123.jpg hoặc Google Drive link.
+                  </small>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, 'thumbnail')}
+                    className="file-input"
+                  />
+                  <small className="field-description">
+                    Chọn ảnh từ máy tính (JPG, PNG). Kích thước đề xuất: 800x600px, dưới 500KB.
+                  </small>
+                </>
+              )}
+
+              {formData.thumbnail && (
+                <div className="image-preview">
+                  <img src={formData.thumbnail} alt="Preview" />
+                </div>
+              )}
+            </div>
+
+            {/* Video Section */}
+            <div className="form-group">
+              <label>
+                Video bài giảng
+                <span className="field-hint">🎥</span>
+              </label>
+
+              <div className="input-mode-toggle">
+                <button
+                  type="button"
+                  className={`mode-btn ${videoMode === 'url' ? 'active' : ''}`}
+                  onClick={() => setVideoMode('url')}
+                >
+                  🔗 Dùng đường dẫn URL
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${videoMode === 'upload' ? 'active' : ''}`}
+                  onClick={() => setVideoMode('upload')}
+                >
+                  📤 Tải video lên
+                </button>
               </div>
+
+              {videoMode === 'url' ? (
+                <>
+                  <input
+                    type="url"
+                    name="video_url"
+                    value={formData.video_url}
+                    onChange={handleInputChange}
+                    placeholder="https://youtube.com/watch?v=..."
+                  />
+                  <small className="field-description">
+                    Nhập link YouTube, Google Drive, hoặc đường dẫn video trực tiếp.
+                    <br/>
+                    <strong>Ví dụ:</strong> https://youtube.com/watch?v=abc123 hoặc https://drive.google.com/file/d/...
+                  </small>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => handleFileUpload(e, 'video')}
+                    className="file-input"
+                  />
+                  <small className="field-description">
+                    Chọn video từ máy tính (MP4, WebM). Lưu ý: File video có thể rất lớn.
+                  </small>
+                </>
+              )}
             </div>
 
             <div className="form-group">

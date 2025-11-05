@@ -3,13 +3,15 @@ Main FastAPI application
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from core.config import settings
 from core.database import init_db
 
 # Import routers
-from routes import auth, lessons, quiz
+from routes import auth, lessons, quiz, upload
 
 
 @asynccontextmanager
@@ -57,6 +59,12 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api")
 app.include_router(lessons.router, prefix="/api")
 app.include_router(quiz.router, prefix="/api")
+app.include_router(upload.router, prefix="/api")
+
+# Mount static files for uploads
+uploads_dir = Path("uploads")
+uploads_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.get("/")
