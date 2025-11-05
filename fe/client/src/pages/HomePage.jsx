@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import lessonService from '../services/lessonService';
+import { getThumbnailURL } from '../utils/urlHelper';
 import Header from '../components/Header';
 import HeroBanner from '../components/HeroBanner';
 import QuickStats from '../components/QuickStats';
@@ -48,7 +49,7 @@ const HomePage = () => {
         id: lesson.id,
         title: lesson.title,
         slug: lesson.slug,
-        thumbnail: lesson.thumbnail || `https://via.placeholder.com/400x225/4A90E2/FFFFFF?text=${encodeURIComponent(lesson.title)}`,
+        thumbnail: lesson.thumbnail, // Don't transform here, let LessonCard handle it
         grade: lesson.grade,
         duration: lesson.duration,
         rating: lesson.rating,

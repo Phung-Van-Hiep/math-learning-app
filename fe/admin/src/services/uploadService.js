@@ -3,7 +3,14 @@
  */
 import api from './api';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:9532';
+// Get base URL without /api suffix for static files
+const getBaseURL = () => {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:9532/api';
+  // Remove /api suffix if present
+  return apiUrl.replace(/\/api$/, '');
+};
+
+const BASE_URL = getBaseURL();
 
 const uploadService = {
   /**
@@ -30,10 +37,10 @@ const uploadService = {
       },
     });
 
-    // Return full URL
+    // Return full URL (BASE_URL already excludes /api)
     return {
       ...response.data,
-      url: `${API_BASE_URL}${response.data.url}`,
+      url: `${BASE_URL}${response.data.url}`,
     };
   },
 
@@ -61,10 +68,10 @@ const uploadService = {
       },
     });
 
-    // Return full URL
+    // Return full URL (BASE_URL already excludes /api)
     return {
       ...response.data,
-      url: `${API_BASE_URL}${response.data.url}`,
+      url: `${BASE_URL}${response.data.url}`,
     };
   },
 

@@ -1,4 +1,5 @@
 import './LessonCard.css';
+import { getThumbnailURL } from '../utils/urlHelper';
 
 const LessonCard = ({ lesson }) => {
   const {
@@ -12,6 +13,9 @@ const LessonCard = ({ lesson }) => {
     progress,
     slug
   } = lesson;
+
+  // Get thumbnail URL with default fallback
+  const thumbnailURL = getThumbnailURL(thumbnail);
 
   // Determine button text and style based on progress
   const getButtonInfo = () => {
@@ -96,7 +100,7 @@ const LessonCard = ({ lesson }) => {
   return (
     <div className="lesson-card" onClick={handleCardClick}>
       <div className="card-thumbnail">
-        <img src={thumbnail} alt={title} />
+        <img src={thumbnailURL} alt={title} />
         <div className="thumbnail-overlay">
           <span>Xem chi tiết</span>
         </div>

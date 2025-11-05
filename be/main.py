@@ -66,6 +66,11 @@ uploads_dir = Path("uploads")
 uploads_dir.mkdir(exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# Mount static files for default images
+default_dir = Path("default")
+default_dir.mkdir(exist_ok=True)
+app.mount("/default", StaticFiles(directory="default"), name="default")
+
 
 @app.get("/")
 async def root():

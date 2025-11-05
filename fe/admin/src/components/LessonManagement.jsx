@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import lessonService from '../services/lessonService';
+import uploadService from '../services/uploadService';
+import { normalizeMediaURL } from '../utils/urlHelper';
 import './LessonManagement.css';
 
 const LessonManagement = () => {
@@ -11,6 +13,14 @@ const LessonManagement = () => {
   const [videoMode, setVideoMode] = useState('url'); // 'url' or 'upload'
   const [slugExists, setSlugExists] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({
+    thumbnail: 0,
+    video: 0,
+  });
+  const [uploading, setUploading] = useState({
+    thumbnail: false,
+    video: false,
+  });
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -105,29 +115,63 @@ const LessonManagement = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // For now, we'll use a simple placeholder
-    // In production, you'd upload to a server or cloud storage
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === 'thumbnail') {
-        setFormData((prev) => ({
-          ...prev,
-          thumbnail: reader.result, // Base64 for preview (or upload to server and get URL)
-        }));
-      } else if (type === 'video') {
-        setFormData((prev) => ({
-          ...prev,
-          video_url: URL.createObjectURL(file), // Or upload to server
-        }));
-      }
-    };
-
+    // Validate file type and size
     if (type === 'thumbnail') {
-      reader.readAsDataURL(file);
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Định dạng ảnh không hợp lệ. Chỉ chấp nhận: JPG, PNG, GIF, WebP');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        alert('Ảnh quá lớn. Kích thước tối đa: 5MB');
+        return;
+      }
+    } else if (type === 'video') {
+      const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Định dạng video không hợp lệ. Chỉ chấp nhận: MP4, WebM, MOV, AVI');
+        return;
+      }
+      if (file.size > 100 * 1024 * 1024) { // 100MB
+        alert('Video quá lớn. Kích thước tối đa: 100MB');
+        return;
+      }
     }
 
-    // TODO: Implement actual file upload to server
-    alert('Tính năng upload file sẽ được bổ sung. Hiện tại vui lòng sử dụng URL.');
+    // Set uploading state
+    setUploading((prev) => ({ ...prev, [type]: true }));
+    setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
+
+    try {
+      let result;
+      if (type === 'thumbnail') {
+        result = await uploadService.uploadImage(file, (progress) => {
+          setUploadProgress((prev) => ({ ...prev, thumbnail: progress }));
+        });
+        // Store the full URL from upload service
+        setFormData((prev) => ({
+          ...prev,
+          thumbnail: result.url,
+        }));
+        alert('Upload ảnh thành công!');
+      } else if (type === 'video') {
+        result = await uploadService.uploadVideo(file, (progress) => {
+          setUploadProgress((prev) => ({ ...prev, video: progress }));
+        });
+        // Store the full URL from upload service
+        setFormData((prev) => ({
+          ...prev,
+          video_url: result.url,
+        }));
+        alert('Upload video thành công!');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert(error.response?.data?.detail || 'Lỗi khi upload file. Vui lòng thử lại.');
+    } finally {
+      setUploading((prev) => ({ ...prev, [type]: false }));
+      setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -395,16 +439,28 @@ const LessonManagement = () => {
                     accept="image/*"
                     onChange={(e) => handleFileUpload(e, 'thumbnail')}
                     className="file-input"
+                    disabled={uploading.thumbnail}
                   />
                   <small className="field-description">
-                    Chọn ảnh từ máy tính (JPG, PNG). Kích thước đề xuất: 800x600px, dưới 500KB.
+                    Chọn ảnh từ máy tính (JPG, PNG, GIF, WebP). Kích thước tối đa: 5MB.
                   </small>
+                  {uploading.thumbnail && (
+                    <div className="upload-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${uploadProgress.thumbnail}%` }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">Đang upload... {uploadProgress.thumbnail}%</span>
+                    </div>
+                  )}
                 </>
               )}
 
               {formData.thumbnail && (
                 <div className="image-preview">
-                  <img src={formData.thumbnail} alt="Preview" />
+                  <img src={normalizeMediaURL(formData.thumbnail)} alt="Preview" />
                 </div>
               )}
             </div>
@@ -455,10 +511,22 @@ const LessonManagement = () => {
                     accept="video/*"
                     onChange={(e) => handleFileUpload(e, 'video')}
                     className="file-input"
+                    disabled={uploading.video}
                   />
                   <small className="field-description">
-                    Chọn video từ máy tính (MP4, WebM). Lưu ý: File video có thể rất lớn.
+                    Chọn video từ máy tính (MP4, WebM, MOV, AVI). Kích thước tối đa: 100MB.
                   </small>
+                  {uploading.video && (
+                    <div className="upload-progress">
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${uploadProgress.video}%` }}
+                        ></div>
+                      </div>
+                      <span className="progress-text">Đang upload... {uploadProgress.video}%</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>
