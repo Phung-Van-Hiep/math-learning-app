@@ -84,11 +84,11 @@ const LoginPage = () => {
             </button>
           </form>
 
-          <div className="login-footer">
+          {/* <div className="login-footer">
             <p>Demo Credentials:</p>
             <p className="credentials">Admin: admin / admin123</p>
             <p className="credentials">Student: student2 / student123</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

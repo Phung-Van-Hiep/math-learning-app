@@ -32,11 +32,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Lấy URL của yêu cầu bị lỗi
+    const originalRequestUrl = error.config.url;
+
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // ⚠️ CHỈ REDIRECT NẾU KHÔNG PHẢI LÀ YÊU CẦU ĐĂNG NHẬP
+      if (!originalRequestUrl.includes('/auth/login')) {
+        // Unauthorized - clear token and redirect to login
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      
+      // Nếu là yêu cầu đăng nhập, cho phép lỗi (Promise.reject(error)) 
+      // được đẩy lên để AuthContext.jsx xử lý.
     }
     return Promise.reject(error);
   }

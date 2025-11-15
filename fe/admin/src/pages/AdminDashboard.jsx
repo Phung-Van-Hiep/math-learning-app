@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import lessonService from '../services/lessonService';
 import LessonManagement from '../components/LessonManagement';
+import StudentManagement from '../components/StudentsManagement';
+import AcademicResults from '../components/AcademicResults';
+import FeedbackManagement from '../components/FeedBackManagement';
+import Settings from '../components/Setting';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -51,7 +55,14 @@ const AdminDashboard = () => {
     switch (activeView) {
       case 'lessons':
         return <LessonManagement />;
-
+      case 'students': // MỚI
+        return <StudentManagement />;
+      case 'results': // MỚI: Thêm case cho kết quả
+        return <AcademicResults />;
+      case 'feedback': // MỚI
+        return <FeedbackManagement />;
+      case 'settings': // MỚI
+        return <Settings />;
       case 'dashboard':
       default:
         return (
@@ -94,11 +105,15 @@ const AdminDashboard = () => {
                   <span>➕</span>
                   <span>Quản lý bài học</span>
                 </button>
-                <button className="action-btn secondary">
+                <button 
+                    className="action-btn secondary"
+                    onClick={() => setActiveView('results')} // MỚI
+                >
                   <span>📊</span>
                   <span>Xem báo cáo</span>
                 </button>
-                <button className="action-btn secondary">
+                <button className="action-btn secondary"
+                  onClick={() => setActiveView('students')}>
                   <span>👥</span>
                   <span>Quản lý học sinh</span>
                 </button>
@@ -177,19 +192,31 @@ const AdminDashboard = () => {
               <span>📚</span>
               <span>Quản lý bài học</span>
             </button>
-            <button className="nav-item" disabled>
+            <button
+              className={`nav-item ${activeView === 'students' ? 'active' : ''}`}
+              onClick={() => setActiveView('students')}
+            >
               <span>👥</span>
               <span>Quản lý học sinh</span>
             </button>
-            <button className="nav-item" disabled>
+            <button 
+              className={`nav-item ${activeView === 'results' ? 'active' : ''}`}
+              onClick={() => setActiveView('results')}
+            >
               <span>📝</span>
               <span>Kết quả học tập</span>
             </button>
-            <button className="nav-item" disabled>
+            <button
+              className={`nav-item ${activeView === 'feedback' ? 'active' : ''}`}
+              onClick={() => setActiveView('feedback')}
+            >
               <span>💬</span>
               <span>Phản hồi</span>
             </button>
-            <button className="nav-item" disabled>
+            <button
+              className={`nav-item ${activeView === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveView('settings')}
+            >
               <span>⚙️</span>
               <span>Cài đặt</span>
             </button>

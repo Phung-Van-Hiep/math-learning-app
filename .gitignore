@@ -4,3 +4,4 @@ db_init/
 images/
 videos/
 *.db
+venv/

@@ -1,0 +1,14 @@
+.ggb-wrapper {
+  display: block;
+  max-width: 100%;
+  margin: 8px 0;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* zapewnia responsywność iframe/svg bên trong */
+.ggb-wrapper > div {
+  width: 100%;
+}

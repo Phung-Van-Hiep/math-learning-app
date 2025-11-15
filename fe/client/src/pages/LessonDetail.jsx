@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import lessonService from '../services/lessonService';
 import QuizSection from '../components/QuizSection';
+import GeoGebraInteractive from '../components/GeoGebraInteractive';
 import './LessonDetail.css';
 
 const LessonDetail = () => {
@@ -18,6 +19,7 @@ const LessonDetail = () => {
   const [videoProgress, setVideoProgress] = useState(0);
   const [contentScrollProgress, setContentScrollProgress] = useState({});
   const [timeSpentInSeconds, setTimeSpentInSeconds] = useState(0);
+  const [isManualScrolling, setIsManualScrolling] = useState(false);
 
   useEffect(() => {
     fetchLesson();
@@ -95,8 +97,12 @@ const LessonDetail = () => {
 
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
+        // 🚨 THÊM ĐIỀU KIỆN KIỂM TRA MỚI:
+        if (isManualScrolling) {
+            return; // Bỏ qua cập nhật nếu đang cuộn thủ công
+        }
+        
         if (entry.isIntersecting) {
-          // Extract section index from element id (format: "section-0", "section-1", etc.)
           const sectionId = entry.target.id;
           const index = parseInt(sectionId.split('-')[1]);
           if (!isNaN(index)) {
@@ -116,7 +122,7 @@ const LessonDetail = () => {
     return () => {
       sectionElements.forEach((element) => observer.unobserve(element));
     };
-  }, [lesson]);
+  }, [lesson,isManualScrolling]);
 
   const fetchLesson = async () => {
     try {
@@ -176,12 +182,20 @@ const LessonDetail = () => {
 
   const handleSectionClick = (index) => {
     setActiveSection(index);
-    // Smooth scroll to section
     const element = document.getElementById(`section-${index}`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // 1. Bật cờ báo hiệu cuộn thủ công
+        setIsManualScrolling(true); 
+
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // 2. Tắt cờ sau một khoảng thời gian đủ cho quá trình cuộn mượt (ví dụ: 800ms)
+        // Độ dài thời gian này cần lớn hơn thời gian cuộn mượt tối đa của bạn
+        setTimeout(() => {
+            setIsManualScrolling(false);
+        }, 800); 
     }
-  };
+};
 
   // Auto-scroll sidebar to show active item
   useEffect(() => {
@@ -199,7 +213,8 @@ const LessonDetail = () => {
       { id: 0, type: 'intro' },
       { id: 1, type: 'video' },
       { id: 2, type: 'content' },
-      { id: 3, type: 'quiz' }
+      { id: 3, type: 'quiz' },
+      { id:4, type: 'geogebra'}
     ];
 
     // Weight different section types
@@ -362,7 +377,14 @@ const LessonDetail = () => {
       title: 'Bài kiểm tra',
       content: '',
       icon: '📝'
-    }
+    },
+    {
+      id: 4,
+      type: 'geogebra',
+      title: 'Tương tác ',
+      content: '',
+      icon: '📐'
+    },
   ];
 
   const getSectionIcon = (section) => {
@@ -492,6 +514,35 @@ const LessonDetail = () => {
             />
           </div>
         );
+        case 'geogebra':
+        // Giả định `section.content` chứa `materialId` hoặc `base64` JSON string
+        const ggbProps = section.content ? JSON.parse(section.content) : {};
+
+        return (
+          <div className="content-block geogebra-block">
+            <div className="block-header">
+              <div className="block-title">
+                <span className="block-icon">📐</span>
+                <h2>HOẠT ĐỘNG TƯƠNG TÁC (GEOGEBRA)</h2>
+              </div>
+            </div>
+            <div className="block-divider"></div>
+            <div className="block-content">
+              {ggbProps.materialId || ggbProps.base64 ? (
+                <GeoGebraInteractive
+                  materialId={ggbProps.materialId}
+                  base64={ggbProps.base64}
+                  appName={ggbProps.appName || 'classic'}
+                  height={ggbProps.height || 500}
+                />
+              ) : (
+                <div className="no-video">
+                  <p>Không có tài liệu GeoGebra nào được cung cấp cho phần này.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
 
       case 'quiz':
         return (
@@ -547,7 +598,7 @@ const LessonDetail = () => {
 
   return (
     <div className="lesson-detail">
-      {/* Lesson Header - Single Row */}
+      {/* Lesson Header - Si ngle Row */}
       <div className="lesson-header">
         <div className="header-content">
           <button className="back-button" onClick={() => navigate('/')}>

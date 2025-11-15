@@ -77,7 +77,7 @@ const Header = () => {
                 <div className="dropdown-info">
                   <small>{user?.email}</small>
                   {user?.grade && user?.class_name && (
-                    <small>Lớp {user.grade}{user.class_name}</small>
+                    <small>Lớp {user.class_name}</small>
                   )}
                 </div>
                 <div className="dropdown-divider"></div>
