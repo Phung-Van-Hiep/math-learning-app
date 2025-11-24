@@ -84,16 +84,51 @@ class QuizService:
 
     @staticmethod
     def update_quiz(db: Session, quiz_id: int, quiz_data: QuizUpdate) -> Optional[Quiz]:
-        """Update quiz details"""
+        """Update quiz details AND questions"""
         quiz = db.query(Quiz).filter(Quiz.id == quiz_id).first()
         if not quiz:
             return None
 
-        update_data = quiz_data.model_dump(exclude_unset=True)
+        # 1. Cập nhật thông tin cơ bản (Title, Duration...)
+        update_data = quiz_data.model_dump(exclude_unset=True, exclude={'questions'}) # Loại bỏ questions để không lỗi setattr
         for field, value in update_data.items():
             setattr(quiz, field, value)
 
         quiz.updated_at = datetime.utcnow()
+
+        # 2. XỬ LÝ CẬP NHẬT CÂU HỎI (Logic mới thêm)
+        if quiz_data.questions is not None:
+            # Cách đơn giản nhất: Xóa hết câu hỏi cũ và tạo lại câu hỏi mới
+            # (Lưu ý: Cách này sẽ làm mất lịch sử câu hỏi cũ nếu cần tracking chi tiết, 
+            # nhưng phù hợp để sửa lỗi nhanh hiện tại)
+            
+            # Xóa câu hỏi cũ (Answers sẽ tự động xóa theo nếu có setup cascade delete trong Database, 
+            # nếu không thì phải xóa tay Answers trước)
+            db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).delete()
+            
+            # Tạo lại câu hỏi mới từ danh sách gửi lên
+            for question_data in quiz_data.questions:
+                question = QuizQuestion(
+                    quiz_id=quiz.id,
+                    question_text=question_data.question_text,
+                    question_type=question_data.question_type,
+                    points=question_data.points,
+                    order=question_data.order,
+                    image_url=question_data.image_url
+                )
+                db.add(question)
+                db.flush()  # Để lấy ID câu hỏi
+
+                # Tạo câu trả lời cho câu hỏi này
+                for answer_data in question_data.answers:
+                    answer = QuizAnswer(
+                        question_id=question.id,
+                        answer_text=answer_data.answer_text,
+                        is_correct=answer_data.is_correct,
+                        order=answer_data.order
+                    )
+                    db.add(answer)
+
         db.commit()
         db.refresh(quiz)
         return quiz
@@ -146,7 +181,7 @@ class QuizService:
 
         for question in quiz.questions:
             total_points += question.points
-            user_answer = submit_data.answers.get(str(question.id))
+            user_answer = submit_data.answers.get((question.id))
 
             # Find correct answer
             correct_answer = None

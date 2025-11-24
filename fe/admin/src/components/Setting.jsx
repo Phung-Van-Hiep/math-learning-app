@@ -1,53 +1,53 @@
 import { useState, useEffect } from 'react';
 // Import CSS dành riêng cho trang Cài đặt
-import './LessonManagement.css';
-
+import './Setting.css';
+import adminService from '../services/adminService';
 // --- Dịch vụ giả (Mock Service) ---
 // Giả lập việc tải và lưu cài đặt
-const fakeSettingsService = {
-  // Giả lập việc tải cài đặt hiện tại từ server
-  getSettings: () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          site_title: 'Học Toán THCS Như Quỳnh',
-          site_description: 'Website học Toán online dành cho học sinh THCS, bám sát chương trình của Bộ GD&ĐT.',
-          admin_email: 'admin@nhuquynh.edu.vn',
-          allow_registration: true,
-        });
-      }, 500);
-    });
-  },
-  // Giả lập việc lưu cài đặt mới
-  updateSettings: (newSettings) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log('ĐÃ LƯU CÀI ĐẶT:', newSettings);
-        resolve(newSettings);
-      }, 500);
-    });
-  },
-  // Giả lập việc đổi mật khẩu
-  changePassword: (passwordData) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (passwordData.current_password === 'password123') { // Giả sử mật khẩu cũ là "password123"
-          console.log('ĐÃ ĐỔI MẬT KHẨU MỚI:', passwordData.new_password);
-          resolve({ message: 'Đổi mật khẩu thành công!' });
-        } else {
-          reject({ message: 'Mật khẩu hiện tại không đúng' });
-        }
-      }, 1000);
-    });
-  }
-};
+// const fakeSettingsService = {
+//   // Giả lập việc tải cài đặt hiện tại từ server
+//   getSettings: () => {
+//     return new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve({
+//           site_title: 'Học Toán THCS Như Quỳnh',
+//           site_description: 'Website học Toán online dành cho học sinh THCS, bám sát chương trình của Bộ GD&ĐT.',
+//           admin_email: 'admin@nhuquynh.edu.vn',
+//           allow_registration: true,
+//         });
+//       }, 500);
+//     });
+//   },
+//   // Giả lập việc lưu cài đặt mới
+//   updateSettings: (newSettings) => {
+//     return new Promise((resolve) => {
+//       setTimeout(() => {
+//         console.log('ĐÃ LƯU CÀI ĐẶT:', newSettings);
+//         resolve(newSettings);
+//       }, 500);
+//     });
+//   },
+//   // Giả lập việc đổi mật khẩu
+//   changePassword: (passwordData) => {
+//     return new Promise((resolve, reject) => {
+//       setTimeout(() => {
+//         if (passwordData.current_password === 'password123') { // Giả sử mật khẩu cũ là "password123"
+//           console.log('ĐÃ ĐỔI MẬT KHẨU MỚI:', passwordData.new_password);
+//           resolve({ message: 'Đổi mật khẩu thành công!' });
+//         } else {
+//           reject({ message: 'Mật khẩu hiện tại không đúng' });
+//         }
+//       }, 1000);
+//     });
+//   }
+// };
 // --- Kết thúc Dịch vụ giả ---
 
 
 const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // State cho form Cài đặt chung
   const [generalData, setGeneralData] = useState({
     site_title: '',
@@ -71,7 +71,7 @@ const Settings = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const data = await fakeSettingsService.getSettings();
+      const data = await adminService.getSettings();
       setGeneralData(data);
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -80,6 +80,7 @@ const Settings = () => {
       setLoading(false);
     }
   };
+
 
   // Xử lý thay đổi cho form Cài đặt chung
   const handleGeneralChange = (e) => {
@@ -105,7 +106,7 @@ const Settings = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await fakeSettingsService.updateSettings(generalData);
+      await adminService.updateSettings(generalData);
       alert('Cập nhật cài đặt chung thành công!');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -114,6 +115,7 @@ const Settings = () => {
       setIsSaving(false);
     }
   };
+
 
   // Xử lý Submit form Đổi mật khẩu
   const handlePasswordSubmit = async (e) => {
@@ -126,17 +128,11 @@ const Settings = () => {
       alert('Mật khẩu mới phải có ít nhất 6 ký tự');
       return;
     }
-
     setIsSaving(true);
     try {
-      await fakeSettingsService.changePassword(passwordData);
+      await adminService.changePassword(passwordData);
       alert('Đổi mật khẩu thành công!');
-      // Xóa các trường mật khẩu sau khi thành công
-      setPasswordData({
-        current_password: '',
-        new_password: '',
-        confirm_password: '',
-      });
+      setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
     } catch (error) {
       console.error('Error changing password:', error);
       alert(`Lỗi: ${error.message || 'Không thể đổi mật khẩu'}`);
@@ -144,6 +140,7 @@ const Settings = () => {
       setIsSaving(false);
     }
   };
+
 
 
   if (loading) {
@@ -163,13 +160,13 @@ const Settings = () => {
       </div>
 
       <div className="settings-content">
-        
+
         {/* === THẺ 1: CÀI ĐẶT CHUNG === */}
         {/* Tái sử dụng class 'lesson-form-container' để làm "thẻ" (card) */}
         <div className="lesson-form-container">
           <h3>Thông tin chung</h3>
           <form onSubmit={handleGeneralSubmit} className="lesson-form">
-            
+
             <div className="form-group">
               <label>Tên Website *</label>
               <input

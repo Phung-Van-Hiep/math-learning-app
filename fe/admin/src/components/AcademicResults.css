@@ -1,0 +1,68 @@
+@import url('./ManagementBase.css');
+
+/* Kiểu cho các Tab */
+.ar-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.ar-tab-btn {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.ar-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.ar-tab-btn.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* Kiểu cho các Badge Tiến độ */
+.progress-badge-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar-table {
+  width: 100px;
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill-table {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: var(--radius-full);
+}
+
+.progress-text-table {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+/* Màu sắc dựa trên tiến độ */
+.progress-fill-table.low {
+  background: var(--error-color);
+}
+.progress-fill-table.medium {
+  background: var(--warning-color);
+}
+.progress-fill-table.high {
+  background: var(--success-color);
+}

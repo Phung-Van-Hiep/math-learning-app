@@ -86,6 +86,7 @@ class QuizCreate(QuizBase):
     questions: List[QuizQuestionCreate] = []
 
 
+# Tìm class này trong file be/schemas/quiz.py
 class QuizUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -94,6 +95,8 @@ class QuizUpdate(BaseModel):
     is_active: Optional[bool] = None
     shuffle_questions: Optional[bool] = None
     show_answers: Optional[bool] = None
+    # 👇 THÊM DÒNG NÀY ĐỂ FIX LỖI LƯU CÂU HỎI 👇
+    questions: Optional[List[QuizQuestionCreate]] = None
 
 
 class QuizResponse(QuizBase):

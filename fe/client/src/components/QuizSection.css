@@ -271,6 +271,162 @@
   font-weight: 500;
 }
 
+/* --- START SCREEN STYLES (Màn hình chờ) --- */
+.quiz-section.start-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.quiz-header-center h2 {
+  font-size: 2rem;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+}
+
+.quiz-desc {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 32px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Grid 3 cột cho thông tin: Thời gian, Số câu, Điểm đạt */
+.quiz-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.info-card {
+  background: #f8fafc;
+  padding: 24px 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  border-color: #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.info-card .icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.info-card .label {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.info-card .value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* Lịch sử làm bài cũ */
+.history-alert {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: #92400e;
+  margin-bottom: 32px;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+/* Nút Bắt đầu thật to và đẹp */
+.btn-start-quiz {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 16px 48px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-start-quiz:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.5);
+  background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+}
+
+/* --- ACTIVE QUIZ HEADER (Header khi đang làm bài) --- */
+.quiz-active-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.timer-badge, .progress-badge {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #4338ca;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-badge {
+  color: #dc2626; /* Màu đỏ cho đồng hồ đếm ngược nếu cần, hoặc giữ xanh */
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 640px) {
+  .quiz-info-grid {
+    grid-template-columns: 1fr; /* Về 1 cột trên mobile */
+    gap: 12px;
+  }
+  
+  .quiz-section.start-screen {
+    padding: 20px;
+  }
+  
+  .quiz-header-center h2 {
+    font-size: 1.5rem;
+  }
+  
+  .btn-start-quiz {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .quiz-section {

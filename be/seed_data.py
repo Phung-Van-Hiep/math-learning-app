@@ -6,7 +6,7 @@ from core.database import SessionLocal, init_db
 from entities.user import User, UserRole
 from entities.lesson import Lesson, LessonDifficulty
 from utils.security import get_password_hash
-
+from entities.geogebra import GeoGebraContent
 
 def create_users(db: Session):
     """Create initial users"""

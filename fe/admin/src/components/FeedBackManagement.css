@@ -1,0 +1,18 @@
+@import url('./ManagementBase.css');
+
+/* Các badge và kiểu chỉ dành riêng cho Phản hồi */
+.badge-feedback-new {
+  background-color: #cffafe; /* Xanh dương nhạt */
+  color: #0891b2; /* Xanh dương đậm */
+}
+
+.badge-feedback-read {
+  background-color: var(--gray-200);
+  color: var(--gray-600);
+}
+
+/* Kiểu cho dòng phản hồi mới (thay cho inline style) */
+.feedback-new-row {
+  font-weight: bold;
+  background-color: var(--primary-light);
+}

@@ -1,7 +1,19 @@
+/* ProgressDashboard.css */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --shadow-soft: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+  --radius-xl: 20px;
+}
+
 .progress-dashboard {
   min-height: calc(100vh - 80px);
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-  padding: var(--spacing-2xl) var(--spacing-lg);
+  background: #f8fafc; /* Nền xám xanh nhẹ */
+  background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
+                    radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
+                    radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+  padding: 40px 20px;
 }
 
 .dashboard-container {
@@ -9,336 +21,242 @@
   margin: 0 auto;
 }
 
-/* Dashboard Header */
+/* Header */
 .dashboard-header {
-  text-align: center;
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: 40px;
 }
-
 .dashboard-header h1 {
   font-size: 2rem;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-sm);
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-
 .dashboard-header p {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: #64748b;
+  font-size: 1.1rem;
 }
 
-/* Stats Cards */
-.stats-cards {
+/* Glass Effect Helper */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-xl);
+}
+
+/* Stats Grid */
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .stat-card {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
+  padding: 24px;
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
+  gap: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
+/* Gradient Borders Bottom */
+.blue-gradient { border-bottom: 4px solid #3b82f6; }
+.green-gradient { border-bottom: 4px solid #10b981; }
+.yellow-gradient { border-bottom: 4px solid #f59e0b; }
+.purple-gradient { border-bottom: 4px solid #8b5cf6; }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-full);
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  flex-shrink: 0;
+  font-size: 1.8rem;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-.stat-content {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
+.stat-info h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0f172a;
   line-height: 1;
   margin-bottom: 4px;
 }
-
-.stat-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+.stat-info p {
+  font-size: 0.9rem;
+  color: #64748b;
   font-weight: 500;
 }
 
-/* Progress Section */
-.progress-section {
-  background: var(--bg-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-sm);
+/* Layout Content */
+.dashboard-content-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px; /* Sidebar bên phải cố định 300px */
+  gap: 32px;
 }
 
-.progress-section h2 {
-  font-size: 1.5rem;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 2px solid var(--border-color);
+/* Lesson Grid */
+.lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
 }
 
-/* Grade Progress */
-.grade-progress {
-  padding: var(--spacing-lg) 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.grade-progress:last-child {
-  border-bottom: none;
-}
-
-.grade-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.grade-header h3 {
-  font-size: 1.125rem;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.grade-stats {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.grade-progress-bar {
-  height: 12px;
-  background: var(--gray-200);
-  border-radius: var(--radius-full);
+.lesson-card-modern {
   overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.grade-progress-fill {
-  height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 0.5s ease;
-}
-
-.grade-progress-text {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-/* Lessons Progress List */
-.lessons-progress-list {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  height: 100%;
 }
 
-.lesson-progress-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background: var(--bg-secondary);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.lesson-progress-card:hover {
-  transform: translateX(4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--primary-color);
-}
-
-.lesson-thumbnail-small {
-  width: 120px;
-  height: 80px;
-  border-radius: var(--radius-md);
-  overflow: hidden;
+.lesson-thumb-wrapper {
   position: relative;
-  flex-shrink: 0;
+  height: 160px;
+  width: 100%;
 }
-
-.lesson-thumbnail-small img {
+.lesson-thumb-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.lesson-card-modern:hover .lesson-thumb-wrapper img {
+  transform: scale(1.05);
 }
 
-.progress-overlay {
+.difficulty-tag {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--success-color) 0%, #10b981 100%);
-  transition: width 0.3s ease;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+.difficulty-tag.easy { color: #10b981; }
+.difficulty-tag.medium { color: #f59e0b; }
+.difficulty-tag.hard { color: #ef4444; }
 
-.lesson-progress-content {
+.lesson-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  min-width: 0;
 }
 
-.lesson-progress-content h3 {
-  font-size: 1.125rem;
-  color: var(--text-primary);
-  margin: 0 0 var(--spacing-sm) 0;
-  white-space: nowrap;
+.lesson-card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.lesson-card-modern h3 {
+  font-size: 1.1rem;
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.4;
+  flex: 1; /* Đẩy progress bar xuống đáy */
+}
+
+/* Progress Bar Custom */
+.progress-bar-bg {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 10px;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.lesson-progress-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-md);
-}
-
-.difficulty-badge {
-  padding: 2px 8px;
-  background: var(--gray-200);
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
-.lesson-progress-bar-container {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
   margin-bottom: 8px;
 }
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.progress-text-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.percent-text {
+  color: #94a3b8;
+}
 
-.lesson-progress-bar {
-  flex: 1;
+/* Right Sidebar: Grade Summary */
+.grade-summary-card {
+  padding: 24px;
+  position: sticky;
+  top: 100px; /* Dính khi cuộn */
+}
+.grade-summary-card h3 {
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.grade-item {
+  margin-bottom: 20px;
+}
+.grade-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+.grade-badge {
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.grade-mini-bar {
   height: 8px;
-  background: var(--gray-200);
-  border-radius: var(--radius-full);
+  background: #f1f5f9;
+  border-radius: 4px;
   overflow: hidden;
 }
-
-.lesson-progress-fill {
+.grade-mini-bar .fill {
   height: 100%;
-  border-radius: var(--radius-full);
-  transition: width 0.5s ease;
+  border-radius: 4px;
 }
 
-.progress-percentage {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  min-width: 45px;
-  text-align: right;
-}
-
-.progress-status {
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.lesson-progress-action {
-  flex-shrink: 0;
-}
-
-.continue-btn {
-  padding: var(--spacing-md) var(--spacing-xl);
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.continue-btn:hover {
-  background: var(--primary-hover);
-  transform: translateX(4px);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-2xl);
-  color: var(--text-tertiary);
-}
-
-.empty-state button {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md) var(--spacing-xl);
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.empty-state button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .progress-dashboard {
-    padding: var(--spacing-lg) var(--spacing-md);
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .dashboard-content-layout {
+    grid-template-columns: 1fr;
   }
-
-  .stats-cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
+  .grade-summary-card {
+    position: static; /* Tắt sticky trên mobile */
+    margin-bottom: 30px;
   }
-
-  .lesson-progress-card {
-    flex-direction: column;
-    align-items: stretch;
+  .content-sidebar {
+    order: -1; /* Đưa sidebar lên trên hoặc để dưới tùy ý */
   }
+}
 
-  .lesson-thumbnail-small {
-    width: 100%;
-    height: 140px;
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
-
-  .lesson-progress-action {
-    width: 100%;
-  }
-
-  .continue-btn {
-    width: 100%;
-  }
-
-  .dashboard-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .dashboard-header p {
-    font-size: 1rem;
+  .lessons-grid {
+    grid-template-columns: 1fr;
   }
 }

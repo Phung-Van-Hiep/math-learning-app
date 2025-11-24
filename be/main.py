@@ -11,7 +11,8 @@ from core.config import settings
 from core.database import init_db
 
 # Import routers
-from routes import auth, lessons, quiz, upload, feedback
+from routes import auth, lessons, quiz, upload, feedback,geogebra, admin
+from entities.geogebra import GeoGebraContent
 
 
 @asynccontextmanager
@@ -61,6 +62,8 @@ app.include_router(lessons.router, prefix="/api")
 app.include_router(quiz.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
 app.include_router(feedback.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
+app.include_router(geogebra.router, prefix="/api")
 
 # Mount static files for uploads
 uploads_dir = Path("uploads")

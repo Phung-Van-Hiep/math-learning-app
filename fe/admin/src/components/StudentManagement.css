@@ -1,0 +1,12 @@
+@import url('./ManagementBase.css');
+
+/* Các badge chỉ dành riêng cho Học sinh */
+.badge-student-active {
+  background-color: #dcfce7; /* Xanh lá cây nhạt */
+  color: #16a34a; /* Xanh lá cây đậm */
+}
+
+.badge-student-inactive {
+  background-color: #fee2e2; /* Đỏ nhạt */
+  color: #dc2626; /* Đỏ đậm */
+}

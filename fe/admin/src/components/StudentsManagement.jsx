@@ -1,76 +1,7 @@
+
 import { useState, useEffect } from 'react';
-// Tái sử dụng CSS từ LessonManagement vì cấu trúc tương tự
-import './LessonManagement.css'; 
-
-// --- Dịch vụ giả (Mock Service) ---
-// Vì chúng ta chưa có studentService, tôi sẽ tạo một dịch vụ giả ở đây
-// để component có thể hoạt động đầy đủ (CRUD)
-// Khi bạn có service thật, hãy xóa phần này và import service của bạn.
-
-const mockStudentDB = [
-  {
-    id: 1,
-    full_name: 'Nguyễn Văn A',
-    email: 'anv@example.com',
-    grade: 9,
-    status: 'active',
-    date_joined: '2023-01-15T10:00:00Z',
-  },
-  {
-    id: 2,
-    full_name: 'Trần Thị B',
-    email: 'btt@example.com',
-    grade: 7,
-    status: 'inactive',
-    date_joined: '2023-02-10T11:30:00Z',
-  },
-];
-
-// Dịch vụ giả mô phỏng các lệnh gọi API
-const fakeStudentService = {
-  getAllStudents: () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([...mockStudentDB]), 500);
-    });
-  },
-  createStudent: (studentData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newStudent = {
-          ...studentData,
-          id: Math.max(...mockStudentDB.map(s => s.id)) + 1,
-          date_joined: new Date().toISOString(),
-        };
-        mockStudentDB.push(newStudent);
-        resolve(newStudent);
-      }, 500);
-    });
-  },
-  updateStudent: (id, studentData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = mockStudentDB.findIndex(s => s.id === id);
-        if (index !== -1) {
-          mockStudentDB[index] = { ...mockStudentDB[index], ...studentData };
-          resolve(mockStudentDB[index]);
-        }
-      }, 500);
-    });
-  },
-  deleteStudent: (id) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = mockStudentDB.findIndex(s => s.id === id);
-        if (index !== -1) {
-          mockStudentDB.splice(index, 1);
-        }
-        resolve();
-      }, 500);
-    });
-  },
-};
-// --- Kết thúc Dịch vụ giả ---
-
+import adminService from '../services/adminService';
+import './StudentManagement.css';
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
@@ -78,30 +9,30 @@ const StudentManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [formData, setFormData] = useState({
+    username: '',
     full_name: '',
     email: '',
     password: '', // Chỉ dùng khi tạo mới
     grade: 6,
+    class_name: '',
     status: 'active',
   });
 
   useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        const data = await adminService.getStudents();
+        setStudents(data);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+        alert('Không thể tải danh sách học sinh');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchStudents();
   }, []);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      // Thay thế 'fakeStudentService' bằng 'studentService' thật của bạn
-      const data = await fakeStudentService.getAllStudents(); 
-      setStudents(data);
-    } catch (error) {
-      console.error('Error fetching students:', error);
-      alert('Không thể tải danh sách học sinh');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -114,13 +45,11 @@ const StudentManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Xác thực email đơn giản
     if (!formData.email.includes('@')) {
       alert('Vui lòng nhập email hợp lệ');
       return;
     }
 
-    // Yêu cầu mật khẩu khi tạo mới
     if (!editingStudent && !formData.password) {
       alert('Vui lòng nhập mật khẩu cho học sinh mới');
       return;
@@ -128,19 +57,26 @@ const StudentManagement = () => {
 
     try {
       if (editingStudent) {
-        // Không gửi mật khẩu khi cập nhật
-        const { password, ...updateData } = formData;
-        await fakeStudentService.updateStudent(editingStudent.id, updateData);
+
+        const { password, status, ...updateData } = formData;
+        updateData.is_active = status === 'active';
+        await adminService.updateStudent(editingStudent.id, updateData);
+
         alert('Cập nhật học sinh thành công!');
       } else {
-        await fakeStudentService.createStudent(formData);
+
+        const { status, ...createData } = formData;
+        createData.is_active = status === 'active';
+        await adminService.createStudent(createData);
+
         alert('Tạo học sinh thành công!');
       }
 
       setShowForm(false);
       setEditingStudent(null);
       resetForm();
-      fetchStudents();
+      const data = await adminService.getStudents();
+      setStudents(data);
     } catch (error) {
       console.error('Error saving student:', error);
       alert('Lỗi khi lưu thông tin học sinh');
@@ -150,24 +86,24 @@ const StudentManagement = () => {
   const handleEdit = (student) => {
     setEditingStudent(student);
     setFormData({
+      username: student.username,
       full_name: student.full_name,
       email: student.email,
-      password: '', // Không hiển thị mật khẩu cũ
-      grade: student.grade,
-      status: student.status,
+      password: '',
+      grade: student.grade || 6,
+      class_name: student.class_name || '',
+      status: student.is_active ? 'active' : 'inactive',
     });
     setShowForm(true);
   };
 
   const handleDelete = async (studentId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa học sinh này?')) {
-      return;
-    }
-
+    if (!window.confirm('Bạn có chắc chắn muốn xóa học sinh này?')) return;
     try {
-      await fakeStudentService.deleteStudent(studentId);
+      await adminService.deleteStudent(studentId);
       alert('Xóa học sinh thành công!');
-      fetchStudents();
+      const data = await adminService.getStudents();
+      setStudents(data);
     } catch (error) {
       console.error('Error deleting student:', error);
       alert('Lỗi khi xóa học sinh');
@@ -176,10 +112,12 @@ const StudentManagement = () => {
 
   const resetForm = () => {
     setFormData({
+      username: '',
       full_name: '',
       email: '',
       password: '',
       grade: 6,
+      class_name: '',
       status: 'active',
     });
   };
@@ -190,7 +128,6 @@ const StudentManagement = () => {
     resetForm();
   };
 
-  // Định dạng ngày cho dễ đọc
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
@@ -206,22 +143,32 @@ const StudentManagement = () => {
 
   return (
     // Tái sử dụng class 'lesson-management'
-    <div className="lesson-management"> 
+
+    <div className="lesson-management">
       <div className="management-header">
         <h2>👥 Quản lý học sinh</h2>
-        <button
-          className="btn-primary"
-          onClick={() => setShowForm(!showForm)}
-        >
+        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
           {showForm ? '❌ Hủy' : '➕ Thêm học sinh mới'}
         </button>
       </div>
+
+
 
       {showForm && (
         <div className="lesson-form-container">
           <h3>{editingStudent ? 'Chỉnh sửa thông tin' : 'Tạo học sinh mới'}</h3>
           <form onSubmit={handleSubmit} className="lesson-form">
             <div className="form-row">
+              <div className="form-group">
+                <label>Tên đăng nhập *</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
               <div className="form-group">
                 <label>Họ và tên *</label>
                 <input
@@ -232,7 +179,9 @@ const StudentManagement = () => {
                   required
                 />
               </div>
+            </div>
 
+            <div className="form-row">
               <div className="form-group">
                 <label>Email *</label>
                 <input
@@ -243,25 +192,21 @@ const StudentManagement = () => {
                   required
                 />
               </div>
+              {!editingStudent && (
+                <div className="form-group">
+                  <label>Mật khẩu *</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Nhập mật khẩu cho học sinh mới"
+                    required
+                  />
+                </div>
+              )}
             </div>
 
-            {!editingStudent && (
-              <div className="form-group">
-                <label>Mật khẩu *</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Nhập mật khẩu cho học sinh mới"
-                  required
-                />
-                <small className="field-description">
-                  Mật khẩu phải có ít nhất 6 ký tự.
-                </small>
-              </div>
-            )}
-            
             <div className="form-row">
               <div className="form-group">
                 <label>Lớp *</label>
@@ -277,7 +222,16 @@ const StudentManagement = () => {
                   <option value="9">Lớp 9</option>
                 </select>
               </div>
-
+              <div className="form-group">
+                <label>Tên lớp *</label>
+                <input
+                  type="text"
+                  name="class_name"
+                  value={formData.class_name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
               <div className="form-group">
                 <label>Trạng thái *</label>
                 <select
@@ -304,15 +258,19 @@ const StudentManagement = () => {
         </div>
       )}
 
+
       {/* Tái sử dụng class 'lessons-table' */}
       <div className="lessons-table">
+
         <table>
           <thead>
             <tr>
               <th>ID</th>
+              <th>Tên đăng nhập</th>
               <th>Họ và tên</th>
               <th>Email</th>
               <th>Lớp</th>
+              <th>Tên lớp</th>
               <th>Trạng thái</th>
               <th>Ngày tham gia</th>
               <th>Thao tác</th>
@@ -322,30 +280,22 @@ const StudentManagement = () => {
             {students.map((student) => (
               <tr key={student.id}>
                 <td>{student.id}</td>
-                {/* Tái sử dụng class 'lesson-title' */}
+                <td>{student.username}</td>
                 <td className="lesson-title">{student.full_name}</td>
                 <td>{student.email}</td>
                 <td>Lớp {student.grade}</td>
+                <td>{student.class_name}</td>
                 <td>
-                  {/* Tái sử dụng các class 'badge' */}
-                  <span className={`badge ${student.status === 'active' ? 'badge-success' : 'badge-draft'}`}>
-                    {student.status === 'active' ? 'Hoạt động' : 'Ngừng'}
+                  <span className={`badge ${student.is_active ? 'badge-success' : 'badge-draft'}`}>
+                    {student.is_active ? 'Hoạt động' : 'Ngừng'}
                   </span>
                 </td>
-                <td>{formatDate(student.date_joined)}</td>
+                <td>{formatDate(student.created_at)}</td>
                 <td className="actions">
-                  <button
-                    className="btn-edit"
-                    onClick={() => handleEdit(student)}
-                    title="Chỉnh sửa"
-                  >
+                  <button className="btn-edit" onClick={() => handleEdit(student)} title="Chỉnh sửa">
                     ✏️
                   </button>
-                  <button
-                    className="btn-delete"
-                    onClick={() => handleDelete(student.id)}
-                    title="Xóa"
-                  >
+                  <button className="btn-delete" onClick={() => handleDelete(student.id)} title="Xóa">
                     🗑️
                   </button>
                 </td>
@@ -353,7 +303,6 @@ const StudentManagement = () => {
             ))}
           </tbody>
         </table>
-
         {students.length === 0 && (
           <div className="empty-state">
             <p>Chưa có học sinh nào</p>

@@ -7,6 +7,7 @@ import './QuizSection.css';
 const QuizSection = ({ lessonId, onQuizComplete }) => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isStarted, setIsStarted] = useState(false);
   const [error, setError] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -24,12 +25,12 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
 
   // Timer
   useEffect(() => {
-    if (quizStartTime && !showResults) {
+    if (isStarted && quizStartTime && !showResults) {
       const interval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - quizStartTime) / 1000);
         setTimeSpent(elapsed);
 
-        // Check if time limit exceeded
+        // Auto-submit nếu hết giờ
         if (quiz?.duration && elapsed >= quiz.duration * 60) {
           handleSubmit();
         }
@@ -37,7 +38,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
 
       return () => clearInterval(interval);
     }
-  }, [quizStartTime, showResults, quiz]);
+  }, [isStarted, quizStartTime, showResults, quiz]);
 
   const loadQuiz = async () => {
     try {
@@ -57,13 +58,19 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
       }
 
       // Start timer
-      setQuizStartTime(Date.now());
+      // setQuizStartTime(Date.now());
     } catch (err) {
       console.error('Error loading quiz:', err);
       setError(err.response?.data?.detail || 'No quiz available for this lesson');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleStartQuiz = () => {
+    setIsStarted(true);
+    setQuizStartTime(Date.now());
+    setTimeSpent(0);
   };
 
   const handleAnswerChange = (questionId, answer) => {
@@ -109,7 +116,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
       const results = await quizService.submitQuiz(quiz.id, submitData);
       setQuizResults(results);
       setShowResults(true);
-
+      setIsStarted(false);
       // Notify parent component
       if (onQuizComplete) {
         onQuizComplete(results);
@@ -129,6 +136,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
     setQuizStartTime(Date.now());
     setShowResults(false);
     setQuizResults(null);
+    setIsStarted(false);
   };
 
   const formatTime = (seconds) => {
@@ -173,6 +181,45 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
         onRetake={handleRetake}
         previousAttempts={previousAttempts}
       />
+    );
+  }
+  if (!isStarted) {
+    return (
+      <div className="quiz-section start-screen">
+        <div className="quiz-header-center">
+          <h2>📝 {quiz.title}</h2>
+          {quiz.description && <p className="quiz-desc">{quiz.description}</p>}
+        </div>
+        
+        <div className="quiz-info-grid">
+          <div className="info-card">
+            <span className="icon">⏱️</span>
+            <span className="label">Thời gian</span>
+            <span className="value">{quiz.duration} phút</span>
+          </div>
+          <div className="info-card">
+            <span className="icon">❓</span>
+            <span className="label">Số câu hỏi</span>
+            <span className="value">{quiz.questions.length} câu</span>
+          </div>
+          <div className="info-card">
+            <span className="icon">🎯</span>
+            <span className="label">Điểm đạt</span>
+            <span className="value">{quiz.passing_score}%</span>
+          </div>
+        </div>
+
+        {previousAttempts.length > 0 && (
+          <div className="history-alert">
+            Bạn đã làm bài này {previousAttempts.length} lần. 
+            Điểm cao nhất: <strong>{Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}</strong>
+          </div>
+        )}
+
+        <button className="btn-start-quiz" onClick={handleStartQuiz}>
+          Bắt đầu làm bài ►
+        </button>
+      </div>
     );
   }
 

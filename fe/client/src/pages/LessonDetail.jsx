@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import lessonService from '../services/lessonService';
 import QuizSection from '../components/QuizSection';
 import GeoGebraInteractive from '../components/GeoGebraInteractive';
+import geogebraService from '../services/geogebraService';
 import './LessonDetail.css';
 
 const LessonDetail = () => {
@@ -20,7 +21,7 @@ const LessonDetail = () => {
   const [contentScrollProgress, setContentScrollProgress] = useState({});
   const [timeSpentInSeconds, setTimeSpentInSeconds] = useState(0);
   const [isManualScrolling, setIsManualScrolling] = useState(false);
-
+  const [geoGebraList, setGeoGebraList] = useState([]);
   useEffect(() => {
     fetchLesson();
     loadLocalProgress();
@@ -134,6 +135,13 @@ const LessonDetail = () => {
         : await lessonService.getLessonBySlug(slug);
 
       setLesson(data);
+
+      try {
+        const ggbData = await geogebraService.getByLesson(data.id);
+        setGeoGebraList(ggbData);
+      } catch (err) {
+        console.error("Lỗi tải GeoGebra:", err);
+      }
 
       // Load saved progress from backend
       if (user && data.progress !== undefined) {
@@ -349,43 +357,55 @@ const LessonDetail = () => {
   }
 
   // Parse content blocks from lesson content or create default structure
-  const sections = lesson.content_blocks || [
-    {
-      id: 0,
-      type: 'intro',
-      title: 'Giới thiệu',
-      content: lesson.description || '',
-      icon: '📚'
+  let builtSections = [
+    { 
+      type: 'intro', 
+      title: 'Giới thiệu', 
+      content: lesson.description || '', 
+      icon: '📚' 
     },
-    {
-      id: 1,
-      type: 'video',
-      title: 'Video bài giảng',
-      content: lesson.video_url || '',
-      icon: '🎥'
+    { 
+      type: 'video', 
+      title: 'Video bài giảng', 
+      content: lesson.video_url || '', 
+      icon: '🎥' 
     },
-    {
-      id: 2,
-      type: 'content',
-      title: 'Nội dung chi tiết',
-      content: lesson.content || '',
-      icon: '📝'
-    },
-    {
-      id: 3,
-      type: 'quiz',
-      title: 'Bài kiểm tra',
-      content: '',
-      icon: '📝'
-    },
-    {
-      id: 4,
-      type: 'geogebra',
-      title: 'Tương tác ',
-      content: '',
-      icon: '📐'
-    },
+    { 
+      type: 'content', 
+      title: 'Nội dung chi tiết', 
+      content: lesson.content || '', 
+      icon: '📝' 
+    }
   ];
+
+  // 2. Chèn thêm các hình GeoGebra (Lấy từ API) vào danh sách
+  // geoGebraList là state bạn vừa thêm ở bước trước
+  if (geoGebraList && geoGebraList.length > 0) {
+    const ggbSections = geoGebraList.map((ggb) => ({
+      type: 'geogebra',
+      title: ggb.title,        // Tiêu đề hình
+      base64: ggb.ggb_base64,  // Dữ liệu hình
+      icon: '📐'
+    }));
+    
+    // Nối danh sách hình vào sau phần Nội dung chi tiết
+    builtSections = [...builtSections, ...ggbSections];
+  }
+
+  // 3. Thêm bài Kiểm tra (Quiz) vào cuối cùng
+  builtSections.push({
+    type: 'quiz',
+    title: 'Bài kiểm tra',
+    content: '',
+    icon: '✅'
+  });
+
+  // 4. Đánh lại số thứ tự ID (0, 1, 2, 3...) để Sidebar hoạt động đúng
+  // Bước này RẤT QUAN TRỌNG để khi click sidebar nó cuộn đến đúng chỗ
+  const sections = builtSections.map((section, index) => ({
+    ...section,
+    id: index 
+  }));
 
   const getSectionIcon = (section) => {
     if (completedSections.has(section.id)) return '✅';
@@ -515,29 +535,27 @@ const LessonDetail = () => {
           </div>
         );
         case 'geogebra':
-        // Giả định `section.content` chứa `materialId` hoặc `base64` JSON string
-        const ggbProps = section.content ? JSON.parse(section.content) : {};
-
         return (
           <div className="content-block geogebra-block">
             <div className="block-header">
               <div className="block-title">
                 <span className="block-icon">📐</span>
-                <h2>HOẠT ĐỘNG TƯƠNG TÁC (GEOGEBRA)</h2>
+                {/* Sử dụng title thực tế của hình */}
+                <h2>{section.title || 'HOẠT ĐỘNG TƯƠNG TÁC'}</h2>
               </div>
             </div>
             <div className="block-divider"></div>
             <div className="block-content">
-              {ggbProps.materialId || ggbProps.base64 ? (
+              {section.base64 ? (
                 <GeoGebraInteractive
-                  materialId={ggbProps.materialId}
-                  base64={ggbProps.base64}
-                  appName={ggbProps.appName || 'classic'}
-                  height={ggbProps.height || 500}
+                  title={section.title}
+                  base64={section.base64} // Truyền đúng props base64
+                  width="100%"
+                  height={600}
                 />
               ) : (
                 <div className="no-video">
-                  <p>Không có tài liệu GeoGebra nào được cung cấp cho phần này.</p>
+                  <p>Đang tải hình ảnh...</p>
                 </div>
               )}
             </div>

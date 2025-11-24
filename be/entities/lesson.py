@@ -54,3 +54,5 @@ class Lesson(Base):
 
     def __repr__(self):
         return f"<Lesson {self.title} (Grade {self.grade})>"
+    # Thêm vào cuối class Lesson
+    geogebra_figures = relationship("GeoGebraContent", back_populates="lesson", cascade="all, delete-orphan")

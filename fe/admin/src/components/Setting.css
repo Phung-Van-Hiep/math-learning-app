@@ -1,0 +1,17 @@
+@import url('./ManagementBase.css');
+
+/* Class này bọc nội dung chính của trang cài đặt 
+  để tạo khoảng cách giữa các "thẻ" (card) 
+*/
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl); /* Thêm khoảng cách giữa các khối cài đặt */
+}
+
+/* Thêm một chút khoảng cách trên cho nút "Lưu" 
+  để nó không dính sát vào trường nhập liệu cuối cùng
+*/
+.settings-form-actions {
+  margin-top: var(--spacing-lg);
+}

@@ -30,7 +30,10 @@ const Header = () => {
             <div className="logo">
               <span>📚</span>
             </div>
-            <h1 className="site-title">Website Hỗ Trợ Dạy Học Toán</h1>
+            <h1 className="site-title"
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}>
+            Website Hỗ Trợ Dạy Học Toán</h1>
           </div>
         </div>
 

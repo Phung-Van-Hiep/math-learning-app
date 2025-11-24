@@ -9,3 +9,62 @@ main {
   display: flex;
   flex-direction: column;
 }
+/* Global CSS Improvements */
+
+/* 1. Hiệu ứng Glassmorphism (Kính mờ) cho các Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* 2. Button Gradient đẹp mắt & Hiệu ứng Click */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; /* Màu tím hiện đại */
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-secondary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; /* Màu tím hiện đại */
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  color:white;
+  font-weight: 600;
+  border-radius: 6px;
+  width: 150px;
+
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* 3. Smooth Hover cho các thẻ bài học */
+.lesson-progress-card, .stat-card, .result-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; /* Hiệu ứng lò xo nhẹ */
+}
+
+.lesson-progress-card:hover, .stat-card:hover, .result-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+}

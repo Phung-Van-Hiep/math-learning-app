@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import lessonService from '../services/lessonService';
 import uploadService from '../services/uploadService';
+import GeoGebraManagement from './GeoGebraManagement';
 import { normalizeMediaURL } from '../utils/urlHelper';
 import './LessonManagement.css';
+import QuizManagement from './QuizManagement';
 
 const LessonManagement = () => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
+  const [quizLesson, setQuizLesson] = useState(null);
   const [thumbnailMode, setThumbnailMode] = useState('url'); // 'url' or 'upload'
   const [videoMode, setVideoMode] = useState('url'); // 'url' or 'upload'
   const [slugExists, setSlugExists] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
+  const [geoGebraLesson, setGeoGebraLesson] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({
     thumbnail: 0,
     video: 0,
@@ -292,15 +296,15 @@ const LessonManagement = () => {
                   <span className="field-hint-icon" title="Click để xem hướng dẫn">
                     💡
                     <span className="tooltip">
-                      <strong>Slug là gì?</strong><br/>
-                      Đường dẫn URL thân thiện, tự động tạo từ tiêu đề.<br/><br/>
-                      <strong>Quy tắc:</strong><br/>
-                      • Chỉ dùng chữ thường (a-z)<br/>
-                      • Chỉ dùng số (0-9)<br/>
-                      • Dùng dấu gạch ngang (-)<br/>
-                      • Không dấu tiếng Việt<br/>
-                      • Không khoảng trắng<br/><br/>
-                      <strong>Ví dụ:</strong><br/>
+                      <strong>Slug là gì?</strong><br />
+                      Đường dẫn URL thân thiện, tự động tạo từ tiêu đề.<br /><br />
+                      <strong>Quy tắc:</strong><br />
+                      • Chỉ dùng chữ thường (a-z)<br />
+                      • Chỉ dùng số (0-9)<br />
+                      • Dùng dấu gạch ngang (-)<br />
+                      • Không dấu tiếng Việt<br />
+                      • Không khoảng trắng<br /><br />
+                      <strong>Ví dụ:</strong><br />
                       "Phương trình bậc hai" → "phuong-trinh-bac-hai"
                     </span>
                   </span>
@@ -500,7 +504,7 @@ const LessonManagement = () => {
                   />
                   <small className="field-description">
                     Nhập link YouTube, Google Drive, hoặc đường dẫn video trực tiếp.
-                    <br/>
+                    <br />
                     <strong>Ví dụ:</strong> https://youtube.com/watch?v=abc123 hoặc https://drive.google.com/file/d/...
                   </small>
                 </>
@@ -600,6 +604,22 @@ const LessonManagement = () => {
                 <td className="actions">
                   <button
                     className="btn-edit"
+                    style={{ color: 'white', marginRight: '5px' }}
+                    onClick={() => setGeoGebraLesson(lesson)}
+                    title="Quản lý hình học"
+                  >
+                    📐
+                  </button>
+                  <button
+                    className="btn-edit"
+                    style={{color: 'white', marginRight: '5px' }}
+                    onClick={() => setQuizLesson(lesson)}
+                    title="Quản lý bài kiểm tra"
+                  >
+                    📝
+                  </button>
+                  <button
+                    className="btn-edit"
                     onClick={() => handleEdit(lesson)}
                     title="Chỉnh sửa"
                   >
@@ -624,6 +644,33 @@ const LessonManagement = () => {
           </div>
         )}
       </div>
+      {geoGebraLesson && (
+        <div className="ggb-modal-overlay" onClick={() => setGeoGebraLesson(null)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <GeoGebraManagement
+              lesson={geoGebraLesson}
+              onClose={() => setGeoGebraLesson(null)}
+            />
+          </div>
+        </div>
+      )}
+      {quizLesson && (
+        <div className="ggb-modal-overlay" onClick={() => setQuizLesson(null)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            {/* Tái sử dụng class overlay của GeoGebra cho nhanh */}
+            <QuizManagement
+              lesson={quizLesson}
+              onClose={() => setQuizLesson(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

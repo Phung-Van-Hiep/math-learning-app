@@ -12,7 +12,15 @@ from utils.security import verify_password, get_password_hash, create_access_tok
 
 class AuthService:
     """Authentication service for login/logout/register"""
+    @staticmethod
+    def verify_password(plain_password: str, hashed_password: str) -> bool:
+        """Verify password wrapper"""
+        return verify_password(plain_password, hashed_password)
 
+    @staticmethod
+    def get_password_hash(password: str) -> str:
+        """Hash password wrapper"""
+        return get_password_hash(password)
     @staticmethod
     def register_user(db: Session, user_data: UserCreate) -> User:
         """

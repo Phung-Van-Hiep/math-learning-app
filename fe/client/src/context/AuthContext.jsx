@@ -82,6 +82,14 @@ export const AuthProvider = ({ children }) => {
       };
     }
   };
+  const updateUser = (userData) => {
+    // 1. Cập nhật State để giao diện thay đổi ngay lập tức
+    setUser(prev => ({ ...prev, ...userData }));
+    
+    // 2. Cập nhật LocalStorage để khi F5 không bị mất dữ liệu mới
+    // (Lưu ý: Bạn nên kiểm tra key localStorage bên authService là gì, thường là 'user')
+    localStorage.setItem('user', JSON.stringify(userData)); 
+  };
 
   const value = {
     user,
@@ -91,6 +99,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     register,
     checkAuth,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
