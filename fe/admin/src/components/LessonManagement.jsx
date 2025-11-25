@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import lessonService from '../services/lessonService';
 import uploadService from '../services/uploadService';
-import GeoGebraManagement from './GeoGebraManagement';
+import GeoGebraManagement from './GeogebraManagement';
 import { normalizeMediaURL } from '../utils/urlHelper';
 import './LessonManagement.css';
 import QuizManagement from './QuizManagement';
-
+import { toast } from 'react-toastify';
 const LessonManagement = () => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
   const [quizLesson, setQuizLesson] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [thumbnailMode, setThumbnailMode] = useState('url'); // 'url' or 'upload'
   const [videoMode, setVideoMode] = useState('url'); // 'url' or 'upload'
   const [slugExists, setSlugExists] = useState(false);
@@ -49,7 +50,7 @@ const LessonManagement = () => {
       setLessons(data);
     } catch (error) {
       console.error('Error fetching lessons:', error);
-      alert('Không thể tải danh sách bài học');
+      toast.error('Không thể tải danh sách bài học');
     } finally {
       setLoading(false);
     }
@@ -123,22 +124,20 @@ const LessonManagement = () => {
     if (type === 'thumbnail') {
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        alert('Định dạng ảnh không hợp lệ. Chỉ chấp nhận: JPG, PNG, GIF, WebP');
-        return;
+        return toast.error('Định dạng ảnh không hợp lệ. Chỉ chấp nhận: JPG, PNG, GIF, WebP');
+
       }
       if (file.size > 5 * 1024 * 1024) { // 5MB
-        alert('Ảnh quá lớn. Kích thước tối đa: 5MB');
-        return;
+        return toast.error('Ảnh quá lớn. Kích thước tối đa: 5MB');
+
       }
     } else if (type === 'video') {
       const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
       if (!allowedTypes.includes(file.type)) {
-        alert('Định dạng video không hợp lệ. Chỉ chấp nhận: MP4, WebM, MOV, AVI');
-        return;
+        return toast.error('Định dạng video không hợp lệ. Chỉ chấp nhận: MP4, WebM, MOV, AVI');
       }
       if (file.size > 100 * 1024 * 1024) { // 100MB
-        alert('Video quá lớn. Kích thước tối đa: 100MB');
-        return;
+        return toast.error('Video quá lớn. Kích thước tối đa: 100MB');
       }
     }
 
@@ -157,7 +156,7 @@ const LessonManagement = () => {
           ...prev,
           thumbnail: result.url,
         }));
-        alert('Upload ảnh thành công!');
+        toast.success('Upload ảnh thành công!');
       } else if (type === 'video') {
         result = await uploadService.uploadVideo(file, (progress) => {
           setUploadProgress((prev) => ({ ...prev, video: progress }));
@@ -167,11 +166,11 @@ const LessonManagement = () => {
           ...prev,
           video_url: result.url,
         }));
-        alert('Upload video thành công!');
+        toast.success('Upload video thành công!');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert(error.response?.data?.detail || 'Lỗi khi upload file. Vui lòng thử lại.');
+      toast.error(error.response?.data?.detail || 'Lỗi khi upload file');
     } finally {
       setUploading((prev) => ({ ...prev, [type]: false }));
       setUploadProgress((prev) => ({ ...prev, [type]: 0 }));
@@ -184,10 +183,10 @@ const LessonManagement = () => {
     try {
       if (editingLesson) {
         await lessonService.updateLesson(editingLesson.id, formData);
-        alert('Cập nhật bài học thành công!');
+        toast.success('Cập nhật bài học thành công!');
       } else {
         await lessonService.createLesson(formData);
-        alert('Tạo bài học thành công!');
+        toast.success('Tạo bài học thành công!');
       }
 
       setShowForm(false);
@@ -196,7 +195,7 @@ const LessonManagement = () => {
       fetchLessons();
     } catch (error) {
       console.error('Error saving lesson:', error);
-      alert(error.response?.data?.detail || 'Lỗi khi lưu bài học');
+      toast.error(error.response?.data?.detail || 'Lỗi khi lưu bài học');
     }
   };
 
@@ -217,18 +216,20 @@ const LessonManagement = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (lessonId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa bài học này?')) {
-      return;
-    }
-
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+  };
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await lessonService.deleteLesson(lessonId);
-      alert('Xóa bài học thành công!');
+      await lessonService.deleteLesson(deleteId);
+      toast.success('Xóa bài học thành công!');
       fetchLessons();
     } catch (error) {
-      console.error('Error deleting lesson:', error);
-      alert('Lỗi khi xóa bài học');
+      console.error('Error deleting:', error);
+      toast.error('Lỗi khi xóa bài học');
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -612,7 +613,7 @@ const LessonManagement = () => {
                   </button>
                   <button
                     className="btn-edit"
-                    style={{color: 'white', marginRight: '5px' }}
+                    style={{ color: 'white', marginRight: '5px' }}
                     onClick={() => setQuizLesson(lesson)}
                     title="Quản lý bài kiểm tra"
                   >
@@ -627,7 +628,7 @@ const LessonManagement = () => {
                   </button>
                   <button
                     className="btn-delete"
-                    onClick={() => handleDelete(lesson.id)}
+                    onClick={() => handleDeleteClick(lesson.id)}
                     title="Xóa"
                   >
                     🗑️
@@ -644,6 +645,27 @@ const LessonManagement = () => {
           </div>
         )}
       </div>
+      {deleteId && (
+        <div className="ggb-modal-overlay" style={{ zIndex: 1100 }}> {/* Tái sử dụng class overlay có sẵn */}
+          <div className="lesson-form-container" style={{ maxWidth: '400px', padding: '20px' }}>
+            <h3 style={{ color: '#dc2626', marginTop: 0 }}>⚠️ Cảnh báo</h3>
+            <p style={{ textAlign: 'center', margin: '20px 0' }}>
+              Bạn có chắc chắn muốn xóa bài học này?<br />
+              <small style={{ color: '#666' }}>Hành động này sẽ xóa cả các bài kiểm tra liên quan.</small>
+            </p>
+            <div className="form-actions" style={{ justifyContent: 'flex-end' }}>
+              <button className="btn-secondary" onClick={() => setDeleteId(null)}>Hủy</button>
+              <button
+                className="btn-primary"
+                style={{ backgroundColor: '#dc2626', border: 'none' }}
+                onClick={confirmDelete}
+              >
+                Xóa ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {geoGebraLesson && (
         <div className="ggb-modal-overlay" onClick={() => setGeoGebraLesson(null)}>
           <div

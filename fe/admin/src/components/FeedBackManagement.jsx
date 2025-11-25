@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import './FeedBackManagement.css';
 import adminService from '../services/adminService';
-
+import { toast } from 'react-toastify';
 const FeedbackManagement = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
-
+  const [deleteId, setDeleteId] = useState(null);
   useEffect(() => {
     fetchFeedback();
   }, []);
@@ -26,18 +26,24 @@ const FeedbackManagement = () => {
     }
   };
 
-  const handleDelete = async (feedbackId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) return;
+
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+  };
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await adminService.deleteFeedback(feedbackId);
-      alert('Xóa phản hồi thành công!');
-      fetchFeedback(); // Tải lại danh sách
-      if (selectedFeedback && selectedFeedback.id === feedbackId) {
+      await adminService.deleteFeedback(deleteId);
+      toast.success('Xóa phản hồi thành công!');
+      fetchFeedback();
+      if (selectedFeedback && selectedFeedback.id === deleteId) {
         setSelectedFeedback(null);
       }
     } catch (error) {
-      console.error('Error deleting feedback:', error);
-      alert('Lỗi khi xóa phản hồi');
+      console.error('Error deleting:', error);
+      toast.error('Lỗi khi xóa phản hồi');
+    } finally {
+      setDeleteId(null); // Đóng modal
     }
   };
 
@@ -92,13 +98,13 @@ const FeedbackManagement = () => {
                 <input type="text" value={selectedFeedback.user_email || 'Không có email'} readOnly />
               </div>
             </div>
-            
+
             <div className="form-row">
-               <div className="form-group">
+              <div className="form-group">
                 <label>Bài học:</label>
                 <input type="text" value={selectedFeedback.lesson_title} readOnly />
               </div>
-               <div className="form-group">
+              <div className="form-group">
                 <label>Đánh giá:</label>
                 <input type="text" value={`${selectedFeedback.rating} sao`} readOnly />
               </div>
@@ -109,7 +115,7 @@ const FeedbackManagement = () => {
               {/* Sửa 'content' thành 'comment' */}
               <textarea value={selectedFeedback.comment} rows="5" readOnly />
             </div>
-            
+
             <div className="form-actions">
               <button
                 type="button"
@@ -141,14 +147,14 @@ const FeedbackManagement = () => {
               <tr key={feedback.id}>
                 <td>{feedback.id}</td>
                 <td>
-                    <div style={{fontWeight: 'bold'}}>{feedback.user_name}</div>
-                    <small>{feedback.user_email}</small>
+                  <div style={{ fontWeight: 'bold' }}>{feedback.user_name}</div>
+                  <small>{feedback.user_email}</small>
                 </td>
                 {/* Sửa 'subject' thành 'lesson_title' */}
                 <td className="lesson-title">{feedback.lesson_title}</td>
                 <td>
-                  <span style={{color: '#f1c40f'}}>
-                    {renderStars(feedback.rating)} 
+                  <span style={{ color: '#f1c40f' }}>
+                    {renderStars(feedback.rating)}
                   </span>
                   ({feedback.rating})
                 </td>
@@ -165,7 +171,7 @@ const FeedbackManagement = () => {
                   </button>
                   <button
                     className="btn-delete"
-                    onClick={() => handleDelete(feedback.id)}
+                    onClick={() => handleDeleteClick(feedback.id)}
                     title="Xóa"
                   >
                     🗑️
@@ -175,7 +181,26 @@ const FeedbackManagement = () => {
             ))}
           </tbody>
         </table>
-
+        {deleteId && (
+          <div className="modal-overlay" style={{ zIndex: 1100 }}>
+            <div className="lesson-form-container" style={{ maxWidth: '400px', padding: '20px', margin: 'auto' }}>
+              <h3 style={{ color: '#dc2626', marginTop: 0 }}>⚠️ Xác nhận xóa</h3>
+              <p style={{ textAlign: 'center', margin: '20px 0' }}>
+                Bạn có chắc chắn muốn xóa phản hồi này không?
+              </p>
+              <div className="form-actions" style={{ justifyContent: 'flex-end' }}>
+                <button className="btn-secondary" onClick={() => setDeleteId(null)}>Hủy</button>
+                <button
+                  className="btn-primary"
+                  style={{ backgroundColor: '#dc2626', border: 'none' }}
+                  onClick={confirmDelete}
+                >
+                  Xóa ngay
+                </button>
+              </div>
+            </div>
+          </div>
+          )}
         {feedbackList.length === 0 && (
           <div className="empty-state">
             <p>Không có phản hồi nào.</p>

@@ -15,3 +15,19 @@
 .settings-form-actions {
   margin-top: var(--spacing-lg);
 }
+
+.checkbox-group input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px !important;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* hoặc var(--spacing-sm) */
+}
+
+.form-spans {
+  margin-left: 0 !important; /* bỏ khoảng thừa */
+}

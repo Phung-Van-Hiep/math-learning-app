@@ -3,7 +3,8 @@ import { useAuth } from './context/AuthContext';
 import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import './App.css';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
 
@@ -31,6 +32,18 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+      <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+       />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route

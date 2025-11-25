@@ -182,7 +182,7 @@ const LessonDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching lesson:', error);
-      alert('Không thể tải bài học');
+      toast.error('Không thể tải bài học');
     } finally {
       setLoading(false);
     }

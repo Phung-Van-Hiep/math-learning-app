@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import adminService from '../services/adminService';
 import './StudentManagement.css';
-
+import { toast } from 'react-toastify';
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,7 @@ const StudentManagement = () => {
     class_name: '',
     status: 'active',
   });
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -26,7 +27,7 @@ const StudentManagement = () => {
         setStudents(data);
       } catch (error) {
         console.error('Error fetching students:', error);
-        alert('Không thể tải danh sách học sinh');
+        toast.error('Không thể tải danh sách học sinh');
       } finally {
         setLoading(false);
       }
@@ -46,13 +47,11 @@ const StudentManagement = () => {
     e.preventDefault();
 
     if (!formData.email.includes('@')) {
-      alert('Vui lòng nhập email hợp lệ');
-      return;
+      return toast.warn('Vui lòng nhập email hợp lệ');
     }
 
     if (!editingStudent && !formData.password) {
-      alert('Vui lòng nhập mật khẩu cho học sinh mới');
-      return;
+      return toast.warn('Vui lòng nhập mật khẩu cho học sinh mới');
     }
 
     try {
@@ -61,15 +60,13 @@ const StudentManagement = () => {
         const { password, status, ...updateData } = formData;
         updateData.is_active = status === 'active';
         await adminService.updateStudent(editingStudent.id, updateData);
-
-        alert('Cập nhật học sinh thành công!');
+        toast.success('Cập nhật học sinh thành công!');
       } else {
 
         const { status, ...createData } = formData;
         createData.is_active = status === 'active';
         await adminService.createStudent(createData);
-
-        alert('Tạo học sinh thành công!');
+        toast.success('Tạo học sinh thành công!');
       }
 
       setShowForm(false);
@@ -79,7 +76,7 @@ const StudentManagement = () => {
       setStudents(data);
     } catch (error) {
       console.error('Error saving student:', error);
-      alert('Lỗi khi lưu thông tin học sinh');
+      toast.error(error.response?.data?.detail || 'Lỗi khi lưu thông tin học sinh');
     }
   };
 
@@ -97,16 +94,21 @@ const StudentManagement = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (studentId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa học sinh này?')) return;
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+  };
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await adminService.deleteStudent(studentId);
-      alert('Xóa học sinh thành công!');
+      await adminService.deleteStudent(deleteId);
+      toast.success('Xóa học sinh thành công!');
       const data = await adminService.getStudents();
       setStudents(data);
     } catch (error) {
-      console.error('Error deleting student:', error);
-      alert('Lỗi khi xóa học sinh');
+      console.error('Error deleting:', error);
+      toast.error('Lỗi khi xóa học sinh');
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -295,7 +297,7 @@ const StudentManagement = () => {
                   <button className="btn-edit" onClick={() => handleEdit(student)} title="Chỉnh sửa">
                     ✏️
                   </button>
-                  <button className="btn-delete" onClick={() => handleDelete(student.id)} title="Xóa">
+                  <button className="btn-delete" onClick={() => handleDeleteClick(student.id)} title="Xóa">
                     🗑️
                   </button>
                 </td>
@@ -303,6 +305,31 @@ const StudentManagement = () => {
             ))}
           </tbody>
         </table>
+        {deleteId && (
+          <div className="modal-overlay" style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+            justifyContent: 'center', alignItems: 'center', zIndex: 1100
+          }}>
+            <div className="lesson-form-container" style={{ maxWidth: '400px', padding: '20px', margin: 0 }}>
+              <h3 style={{ color: '#dc2626', marginTop: 0 }}>⚠️ Xác nhận xóa</h3>
+              <p style={{ textAlign: 'center', margin: '20px 0' }}>
+                Bạn có chắc chắn muốn xóa học sinh này?<br />
+                <small style={{ color: '#666' }}>Dữ liệu điểm số và tiến độ cũng sẽ bị xóa.</small>
+              </p>
+              <div className="form-actions" style={{ justifyContent: 'flex-end' }}>
+                <button className="btn-secondary" onClick={() => setDeleteId(null)}>Hủy</button>
+                <button
+                  className="btn-primary"
+                  style={{ backgroundColor: '#dc2626', border: 'none' }}
+                  onClick={confirmDelete}
+                >
+                  Xóa ngay
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {students.length === 0 && (
           <div className="empty-state">
             <p>Chưa có học sinh nào</p>

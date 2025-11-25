@@ -110,7 +110,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.btn-success:hover { background-color: var(--success-dark); }
+.btn-success:hover { scale: calc(1.1); }
 
 /* List Item Preview */
 .questions-list {
@@ -283,4 +283,48 @@
 .final-save p {
   color: var(--text-secondary);
   margin-top: 8px;
+}
+.section-config .form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.quiz-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quiz-input-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quiz-input-group input {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  transition: 0.2s;
+}
+
+.quiz-input-group input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Căn nút lưu đẹp hơn */
+.section-config .btn-primary {
+  margin-top: 20px;
+}
+
+/* Tăng khoảng cách giữa Section Info và Questions */
+.quiz-mgmt-body hr {
+  margin: 32px 0;
+  border: none;
+  height: 1px;
+  background: var(--border-color);
 }

@@ -2,38 +2,7 @@ import { useState, useEffect } from 'react';
 // Import CSS của riêng component này
 import './AcademicResults.css';
 import adminService from '../services/adminService';
-// --- Dịch vụ giả (Mock Service) ---
-// Giả lập API lấy KẾT QUẢ KIỂM TRA của TẤT CẢ học sinh
-// const mockQuizResults = [
-//   { id: 1, user_name: 'Nguyễn Văn A', lesson_title: 'Phương trình bậc hai', score: 85, time_spent: 300, submitted_at: '2023-11-12T10:00:00Z' },
-//   { id: 2, user_name: 'Trần Thị B', lesson_title: 'Hệ thức Vi-et', score: 50, time_spent: 450, submitted_at: '2023-11-11T14:20:00Z' },
-//   { id: 3, user_name: 'Nguyễn Văn A', lesson_title: 'Hệ thức Vi-et', score: 90, time_spent: 280, submitted_at: '2023-11-11T11:00:00Z' },
-//   { id: 4, user_name: 'Lê Văn C', lesson_title: 'Phương trình bậc hai', score: 100, time_spent: 180, submitted_at: '2023-11-10T08:00:00Z' },
-// ];
-
-// // Giả lập API lấy TIẾN ĐỘ BÀI HỌC của TẤT CẢ học sinh
-// const mockLessonProgress = [
-//   { id: 1, user_name: 'Nguyễn Văn A', lesson_title: 'Phương trình bậc hai', progress: 100, time_spent: 1500, last_updated: '2023-11-12T10:30:00Z' },
-//   { id: 2, user_name: 'Trần Thị B', lesson_title: 'Hệ thức Vi-et', progress: 40, time_spent: 900, last_updated: '2023-11-11T14:30:00Z' },
-//   { id: 3, user_name: 'Nguyễn Văn A', lesson_title: 'Hệ thức Vi-et', progress: 100, time_spent: 1200, last_updated: '2023-11-11T11:30:00Z' },
-//   { id: 4, user_name: 'Lê Văn C', lesson_title: 'Phương trình bậc hai', progress: 100, time_spent: 800, last_updated: '2023-11-10T08:30:00Z' },
-//   { id: 5, user_name: 'Trần Thị B', lesson_title: 'Phương trình bậc hai', progress: 10, time_spent: 120, last_updated: '2023-11-09T17:00:00Z' },
-// ];
-
-// const fakeAdminResultService = {
-//   getAllQuizAttempts: () => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => resolve(mockQuizResults), 500);
-//     });
-//   },
-//   getAllLessonProgress: () => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => resolve(mockLessonProgress), 500);
-//     });
-//   },
-// };
-// --- Kết thúc Dịch vụ giả ---
-
+import { toast } from 'react-toastify';
 
 const AcademicResults = () => {
   const [activeTab, setActiveTab] = useState('quiz'); // 'quiz' hoặc 'progress'
@@ -55,7 +24,7 @@ const AcademicResults = () => {
         setLessonProgress(progressData.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated)));
       } catch (error) {
         console.error('Error fetching results:', error);
-        alert('Không thể tải kết quả học tập');
+        toast.error('Không thể tải kết quả học tập');
       } finally {
         setLoading(false);
       }

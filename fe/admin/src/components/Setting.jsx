@@ -2,47 +2,7 @@ import { useState, useEffect } from 'react';
 // Import CSS dành riêng cho trang Cài đặt
 import './Setting.css';
 import adminService from '../services/adminService';
-// --- Dịch vụ giả (Mock Service) ---
-// Giả lập việc tải và lưu cài đặt
-// const fakeSettingsService = {
-//   // Giả lập việc tải cài đặt hiện tại từ server
-//   getSettings: () => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve({
-//           site_title: 'Học Toán THCS Như Quỳnh',
-//           site_description: 'Website học Toán online dành cho học sinh THCS, bám sát chương trình của Bộ GD&ĐT.',
-//           admin_email: 'admin@nhuquynh.edu.vn',
-//           allow_registration: true,
-//         });
-//       }, 500);
-//     });
-//   },
-//   // Giả lập việc lưu cài đặt mới
-//   updateSettings: (newSettings) => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         console.log('ĐÃ LƯU CÀI ĐẶT:', newSettings);
-//         resolve(newSettings);
-//       }, 500);
-//     });
-//   },
-//   // Giả lập việc đổi mật khẩu
-//   changePassword: (passwordData) => {
-//     return new Promise((resolve, reject) => {
-//       setTimeout(() => {
-//         if (passwordData.current_password === 'password123') { // Giả sử mật khẩu cũ là "password123"
-//           console.log('ĐÃ ĐỔI MẬT KHẨU MỚI:', passwordData.new_password);
-//           resolve({ message: 'Đổi mật khẩu thành công!' });
-//         } else {
-//           reject({ message: 'Mật khẩu hiện tại không đúng' });
-//         }
-//       }, 1000);
-//     });
-//   }
-// };
-// --- Kết thúc Dịch vụ giả ---
-
+import { toast } from 'react-toastify';
 
 const Settings = () => {
   const [loading, setLoading] = useState(true);
@@ -75,7 +35,7 @@ const Settings = () => {
       setGeneralData(data);
     } catch (error) {
       console.error('Error fetching settings:', error);
-      alert('Không thể tải cài đặt');
+      toast.error('Không thể tải cài đặt');
     } finally {
       setLoading(false);
     }
@@ -107,10 +67,10 @@ const Settings = () => {
     setIsSaving(true);
     try {
       await adminService.updateSettings(generalData);
-      alert('Cập nhật cài đặt chung thành công!');
+      toast.success('Cập nhật cài đặt chung thành công!');
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Lỗi khi lưu cài đặt');
+      toast.error('Lỗi khi lưu cài đặt');
     } finally {
       setIsSaving(false);
     }
@@ -121,21 +81,19 @@ const Settings = () => {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordData.new_password !== passwordData.confirm_password) {
-      alert('Mật khẩu mới không khớp. Vui lòng nhập lại!');
-      return;
+      return toast.warn('Mật khẩu mới không khớp. Vui lòng nhập lại!');
     }
     if (passwordData.new_password.length < 6) {
-      alert('Mật khẩu mới phải có ít nhất 6 ký tự');
-      return;
+      return toast.warn('Mật khẩu mới phải có ít nhất 6 ký tự');
     }
     setIsSaving(true);
     try {
       await adminService.changePassword(passwordData);
-      alert('Đổi mật khẩu thành công!');
+      toast.success('Đổi mật khẩu thành công!');
       setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
     } catch (error) {
       console.error('Error changing password:', error);
-      alert(`Lỗi: ${error.message || 'Không thể đổi mật khẩu'}`);
+      toast.error(error.response?.data?.detail || 'Mật khẩu hiện tại không đúng hoặc lỗi hệ thống');
     } finally {
       setIsSaving(false);
     }
@@ -206,6 +164,7 @@ const Settings = () => {
                   name="allow_registration"
                   checked={generalData.allow_registration}
                   onChange={handleGeneralChange}
+                  className="small-checkbox"
                 />
                 <span>Cho phép học sinh mới đăng ký</span>
               </label>

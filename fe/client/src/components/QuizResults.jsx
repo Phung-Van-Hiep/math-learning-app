@@ -6,16 +6,17 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
   const [showDetailedResults, setShowDetailedResults] = useState(false);
   const { attempt, passed, correct_answers } = results;
 
+  // Format thời gian: 120s -> 2m 00s
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}m ${secs}s`;
+    return `${mins}p ${secs}s`;
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return '#16a34a';
-    if (score >= 60) return '#f59e0b';
-    return '#dc2626';
+    if (score >= 80) return '#16a34a'; // Xanh lá
+    if (score >= 60) return '#f59e0b'; // Cam
+    return '#dc2626'; // Đỏ
   };
 
   const getScoreEmoji = (score) => {
@@ -27,19 +28,20 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
   };
 
   const getPerformanceMessage = (score, passed) => {
-    if (score >= 90) return 'Outstanding! You mastered this quiz!';
-    if (score >= 80) return 'Excellent work! You did great!';
-    if (score >= 70) return 'Good job! You passed with solid understanding!';
-    if (score >= 60) return 'You passed! Keep practicing to improve!';
-    return 'Don\'t give up! Review the material and try again!';
+    if (score >= 90) return 'Tuyệt vời! Bạn đã nắm vững kiến thức!';
+    if (score >= 80) return 'Làm tốt lắm! Kết quả rất ấn tượng!';
+    if (score >= 70) return 'Khá tốt! Bạn đã hiểu bài học!';
+    if (score >= 60) return 'Chúc mừng! Bạn đã vượt qua bài kiểm tra!';
+    return 'Đừng nản lòng! Hãy ôn tập lại và thử lại nhé!';
   };
 
   const correctCount = correct_answers?.filter(a => a.is_correct).length || 0;
   const totalQuestions = quiz.questions.length;
 
-  // Get best score from previous attempts
+  // Tìm điểm cao nhất trong các lần làm bài trước + lần này
   const allScores = [...previousAttempts.map(a => a.score), attempt.score];
   const bestScore = Math.max(...allScores);
+  // Kiểm tra xem lần này có phải kỷ lục mới không
   const isNewBest = attempt.score === bestScore && previousAttempts.length > 0;
 
   return (
@@ -50,7 +52,7 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
           {passed ? '🎉' : '📚'}
         </div>
         <h2 className="results-title">
-          {passed ? 'Congratulations!' : 'Quiz Completed'}
+          {passed ? 'Chúc mừng bạn!' : 'Hoàn thành bài thi'}
         </h2>
         <p className="results-message">
           {getPerformanceMessage(attempt.score, passed)}
@@ -62,16 +64,16 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
         <div className="score-circle" style={{ borderColor: getScoreColor(attempt.score) }}>
           <div className="score-emoji">{getScoreEmoji(attempt.score)}</div>
           <div className="score-value" style={{ color: getScoreColor(attempt.score) }}>
-            {attempt.score.toFixed(1)}%
+            {Math.round(attempt.score)}%
           </div>
-          <div className="score-label">Your Score</div>
+          <div className="score-label">Điểm số</div>
         </div>
 
         <div className="score-details">
           <div className="score-detail-item">
             <div className="detail-icon">✓</div>
             <div className="detail-content">
-              <div className="detail-label">Correct Answers</div>
+              <div className="detail-label">Số câu đúng</div>
               <div className="detail-value">{correctCount} / {totalQuestions}</div>
             </div>
           </div>
@@ -79,7 +81,7 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
           <div className="score-detail-item">
             <div className="detail-icon">⭐</div>
             <div className="detail-content">
-              <div className="detail-label">Points Earned</div>
+              <div className="detail-label">Điểm đạt được</div>
               <div className="detail-value">
                 {attempt.points_earned.toFixed(1)} / {attempt.total_points.toFixed(1)}
               </div>
@@ -89,7 +91,7 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
           <div className="score-detail-item">
             <div className="detail-icon">⏱️</div>
             <div className="detail-content">
-              <div className="detail-label">Time Spent</div>
+              <div className="detail-label">Thời gian làm</div>
               <div className="detail-value">{formatTime(attempt.time_spent)}</div>
             </div>
           </div>
@@ -97,9 +99,9 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
           <div className="score-detail-item">
             <div className="detail-icon">🎯</div>
             <div className="detail-content">
-              <div className="detail-label">Status</div>
+              <div className="detail-label">Kết quả</div>
               <div className="detail-value" style={{ color: passed ? '#16a34a' : '#dc2626' }}>
-                {passed ? 'PASSED' : 'FAILED'}
+                {passed ? 'ĐẠT' : 'CHƯA ĐẠT'}
               </div>
             </div>
           </div>
@@ -109,19 +111,19 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
       {/* New Best Score Badge */}
       {isNewBest && (
         <div className="new-best-badge">
-          🏆 New Personal Best! 🏆
+          🏆 Kỷ lục mới! Bạn vừa đạt điểm cao nhất từ trước tới nay! 🏆
         </div>
       )}
 
       {/* Passing Score Info */}
       <div className="passing-score-info">
         <p>
-          Passing Score: <strong>{quiz.passing_score}%</strong>
+          Điểm yêu cầu: <strong>{quiz.passing_score}%</strong>
           {passed ? (
-            <span className="passed-badge">✓ You passed!</span>
+            <span className="passed-badge">✓ Bạn đã qua môn!</span>
           ) : (
             <span className="failed-badge">
-              ✗ You need {(quiz.passing_score - attempt.score).toFixed(1)}% more to pass
+              ✗ Bạn cần thêm {(quiz.passing_score - attempt.score).toFixed(1)}% nữa để qua
             </span>
           )}
         </p>
@@ -130,11 +132,11 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
       {/* Performance History */}
       {previousAttempts.length > 0 && (
         <div className="performance-history">
-          <h3>Your Performance History</h3>
+          <h3>Lịch sử làm bài</h3>
           <div className="attempts-grid">
             {[...previousAttempts, { ...attempt, is_current: true }]
               .sort((a, b) => new Date(b.submitted_at || b.started_at) - new Date(a.submitted_at || a.started_at))
-              .slice(0, 5)
+              .slice(0, 5) // Lấy 5 lần gần nhất
               .map((att, index) => (
                 <div
                   key={att.id || 'current'}
@@ -142,17 +144,17 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
                 >
                   <div className="attempt-header">
                     <span className="attempt-number">
-                      {att.is_current ? 'Latest' : `Attempt ${previousAttempts.length - index + 1}`}
+                      {att.is_current ? 'Mới nhất' : `Lần ${previousAttempts.length - index + 1}`}
                     </span>
                     {att.score === bestScore && (
-                      <span className="best-badge">Best</span>
+                      <span className="best-badge">Cao nhất</span>
                     )}
                   </div>
                   <div className="attempt-score" style={{ color: getScoreColor(att.score) }}>
-                    {att.score.toFixed(1)}%
+                    {Math.round(att.score)}%
                   </div>
                   <div className="attempt-status">
-                    {att.score >= quiz.passing_score ? '✓ Passed' : '✗ Failed'}
+                    {att.score >= quiz.passing_score ? '✓ Đạt' : '✗ Trượt'}
                   </div>
                 </div>
               ))}
@@ -167,12 +169,12 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
             className="btn btn-outline"
             onClick={() => setShowDetailedResults(!showDetailedResults)}
           >
-            {showDetailedResults ? '▲ Hide' : '▼ Show'} Detailed Results
+            {showDetailedResults ? '▲ Ẩn chi tiết' : '▼ Xem đáp án chi tiết'}
           </button>
 
           {showDetailedResults && (
             <div className="detailed-results">
-              <h3>Question Review</h3>
+              <h3>Xem lại bài làm</h3>
               <div className="questions-review">
                 {quiz.questions.map((question, index) => {
                   const correctAnswer = correct_answers.find(
@@ -201,14 +203,14 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
           className="btn btn-primary btn-large"
           onClick={onRetake}
         >
-          🔄 Retake Quiz
+          🔄 Làm lại bài thi
         </button>
         {passed && (
           <button
             className="btn btn-success btn-large"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            ✓ Continue Learning
+            ✓ Học tiếp bài sau
           </button>
         )}
       </div>
@@ -216,12 +218,12 @@ const QuizResults = ({ results, quiz, answers, onRetake, previousAttempts }) => 
       {/* Encouragement Message */}
       {!passed && (
         <div className="encouragement-box">
-          <h4>💡 Tips for Improvement:</h4>
+          <h4>💡 Mẹo để cải thiện điểm số:</h4>
           <ul>
-            <li>Review the lesson content carefully</li>
-            <li>Pay attention to the question details</li>
-            <li>Take your time to think through each answer</li>
-            <li>Practice makes perfect - try again!</li>
+            <li>Xem lại kỹ nội dung bài giảng và video.</li>
+            <li>Đọc kỹ câu hỏi trước khi chọn đáp án.</li>
+            <li>Đừng vội vàng, hãy suy nghĩ thật kỹ.</li>
+            <li>Làm bài nhiều lần giúp bạn nhớ lâu hơn!</li>
           </ul>
         </div>
       )}

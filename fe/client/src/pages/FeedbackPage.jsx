@@ -6,6 +6,7 @@ import lessonService from '../services/lessonService';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './FeedbackPage.css';
+import { toast } from 'react-toastify';
 
 const FeedbackPage = () => {
   const { user } = useAuth();
@@ -13,11 +14,16 @@ const FeedbackPage = () => {
   const [myFeedback, setMyFeedback] = useState([]);
   const [lessons, setLessons] = useState({});
   const [loading, setLoading] = useState(true);
+  
+  // State cho Modal Tạo/Sửa
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // State cho Modal Xóa (MỚI)
+  const [deleteId, setDeleteId] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -30,12 +36,9 @@ const FeedbackPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      // Fetch my feedback
       const feedbackData = await feedbackService.getMyFeedback();
       setMyFeedback(feedbackData);
 
-      // Fetch all lessons
       const lessonsData = await lessonService.getMyLessons();
       const lessonsMap = {};
       lessonsData.forEach(lesson => {
@@ -44,6 +47,7 @@ const FeedbackPage = () => {
       setLessons(lessonsMap);
     } catch (error) {
       console.error('Error fetching data:', error);
+      toast.error("Không thể tải dữ liệu phản hồi");
     } finally {
       setLoading(false);
     }
@@ -55,35 +59,37 @@ const FeedbackPage = () => {
     try {
       setSubmitting(true);
       await feedbackService.createFeedback(selectedLesson.id, rating, comment);
-
-      // Refresh feedback list
       await fetchData();
-
-      // Reset form
       setShowCreateModal(false);
       setSelectedLesson(null);
       setRating(5);
       setComment('');
-
-      alert('Cảm ơn bạn đã gửi phản hồi!');
+      toast.success('Cảm ơn bạn đã gửi phản hồi!');
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      alert('Có lỗi xảy ra. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteFeedback = async (feedbackId) => {
-    if (!confirm('Bạn có chắc muốn xóa phản hồi này?')) return;
+  // Hàm mở modal xác nhận xóa (Thay thế hàm cũ)
+  const handleDeleteClick = (feedbackId) => {
+    setDeleteId(feedbackId);
+  };
 
+  // Hàm thực hiện xóa thật sự
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await feedbackService.deleteFeedback(feedbackId);
+      await feedbackService.deleteFeedback(deleteId);
       await fetchData();
-      alert('Đã xóa phản hồi');
+      toast.success('Đã xóa phản hồi');
     } catch (error) {
       console.error('Error deleting feedback:', error);
-      alert('Có lỗi xảy ra khi xóa phản hồi');
+      toast.error('Có lỗi xảy ra khi xóa phản hồi');
+    } finally {
+      setDeleteId(null); // Đóng modal
     }
   };
 
@@ -108,13 +114,10 @@ const FeedbackPage = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('vi-VN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      year: 'numeric', month: 'long', day: 'numeric'
     });
   };
 
-  // Get lessons that don't have feedback yet
   const lessonsWithoutFeedback = Object.values(lessons).filter(
     lesson => !myFeedback.some(fb => fb.lesson_id === lesson.id)
   );
@@ -147,7 +150,12 @@ const FeedbackPage = () => {
             <div className="create-feedback-section">
               <button
                 className="btn-create-feedback"
-                onClick={() => setShowCreateModal(true)}
+                onClick={() => {
+                  setSelectedLesson(null); // Reset selection
+                  setRating(5);
+                  setComment('');
+                  setShowCreateModal(true);
+                }}
               >
                 + Tạo phản hồi mới
               </button>
@@ -159,7 +167,9 @@ const FeedbackPage = () => {
             {myFeedback.length === 0 ? (
               <div className="empty-state">
                 <p>Bạn chưa có phản hồi nào</p>
-                <button onClick={() => setShowCreateModal(true)}>Tạo phản hồi đầu tiên</button>
+                {lessonsWithoutFeedback.length > 0 && (
+                   <button onClick={() => setShowCreateModal(true)}>Tạo phản hồi đầu tiên</button>
+                )}
               </div>
             ) : (
               myFeedback.map(feedback => (
@@ -184,17 +194,23 @@ const FeedbackPage = () => {
                     <button
                       className="btn-edit"
                       onClick={() => {
-                        setSelectedLesson(lessons[feedback.lesson_id]);
-                        setRating(feedback.rating);
-                        setComment(feedback.comment || '');
-                        setShowCreateModal(true);
+                        // Logic sửa: tìm lại lesson object từ ID
+                        const lesson = lessons[feedback.lesson_id];
+                        if (lesson) {
+                            setSelectedLesson(lesson);
+                            setRating(feedback.rating);
+                            setComment(feedback.comment || '');
+                            setShowCreateModal(true);
+                        } else {
+                            toast.error("Không tìm thấy thông tin bài học này");
+                        }
                       }}
                     >
                       ✏️ Sửa
                     </button>
                     <button
                       className="btn-delete"
-                      onClick={() => handleDeleteFeedback(feedback.id)}
+                      onClick={() => handleDeleteClick(feedback.id)} // Gọi hàm mở Modal
                     >
                       🗑️ Xóa
                     </button>
@@ -205,31 +221,31 @@ const FeedbackPage = () => {
           </div>
         </div>
 
-        {/* Create/Edit Modal */}
+        {/* MODAL TẠO/SỬA (Giữ nguyên logic cũ nhưng chỉnh lại điều kiện hiển thị select) */}
         {showCreateModal && (
           <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
-                <h2>{selectedLesson ? 'Cập nhật phản hồi' : 'Tạo phản hồi mới'}</h2>
-                <button
-                  className="modal-close"
-                  onClick={() => setShowCreateModal(false)}
-                >
-                  ×
-                </button>
+                {/* Nếu selectedLesson đã có -> Đang Sửa hoặc đã Chọn bài để tạo. Nếu chưa -> Đang Tạo mới từ đầu */}
+                <h2>{selectedLesson ? 'Viết phản hồi' : 'Chọn bài học để phản hồi'}</h2>
+                <button className="modal-close" onClick={() => setShowCreateModal(false)}>×</button>
               </div>
 
               <div className="modal-body">
-                {/* Lesson Selection */}
-                {!selectedLesson && (
+                {/* Nếu chưa chọn bài (trường hợp tạo mới) thì hiện select box */}
+                {!selectedLesson ? (
                   <div className="form-group">
                     <label>Chọn bài học</label>
                     <select
-                      value={selectedLesson?.id || ''}
-                      onChange={(e) => setSelectedLesson(lessons[e.target.value])}
                       className="form-select"
+                      onChange={(e) => {
+                          const lessonId = parseInt(e.target.value);
+                          const lesson = lessons[lessonId];
+                          setSelectedLesson(lesson);
+                      }}
+                      defaultValue=""
                     >
-                      <option value="">-- Chọn bài học --</option>
+                      <option value="" disabled>-- Chọn bài học --</option>
                       {lessonsWithoutFeedback.map(lesson => (
                         <option key={lesson.id} value={lesson.id}>
                           {lesson.title}
@@ -237,12 +253,11 @@ const FeedbackPage = () => {
                       ))}
                     </select>
                   </div>
-                )}
-
-                {selectedLesson && (
+                ) : (
+                  // Nếu đã chọn bài (hoặc đang sửa), hiện form nhập liệu
                   <>
                     <div className="form-group">
-                      <label>Bài học: {selectedLesson.title}</label>
+                      <label>Bài học: <strong>{selectedLesson.title}</strong></label>
                     </div>
 
                     <div className="form-group">
@@ -267,24 +282,44 @@ const FeedbackPage = () => {
               </div>
 
               <div className="modal-footer">
-                <button
-                  className="btn-cancel"
-                  onClick={() => setShowCreateModal(false)}
-                  disabled={submitting}
+                <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>Hủy</button>
+                {selectedLesson && (
+                    <button className="btn-submit" onClick={handleSubmitFeedback} disabled={submitting}>
+                    {submitting ? 'Đang gửi...' : 'Gửi phản hồi'}
+                    </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL XÁC NHẬN XÓA (MỚI THÊM) */}
+        {deleteId && (
+          <div className="modal-overlay" style={{ zIndex: 1100 }}>
+            <div className="modal-content" style={{ maxWidth: '400px', padding: '0' }}>
+              <div className="modal-header" style={{ borderBottom: 'none', paddingBottom: '0' }}>
+                <h2 style={{ color: '#dc2626' }}>⚠️ Xác nhận xóa</h2>
+              </div>
+              <div className="modal-body" style={{ textAlign: 'center', padding: '20px' }}>
+                <p>Bạn có chắc chắn muốn xóa phản hồi này không?</p>
+                <p style={{ fontSize: '0.9rem', color: '#6b7280', marginTop: '5px' }}>
+                  Hành động này không thể hoàn tác.
+                </p>
+              </div>
+              <div className="modal-footer" style={{ justifyContent: 'center', paddingBottom: '20px' }}>
+                <button className="btn-cancel" onClick={() => setDeleteId(null)}>Hủy bỏ</button>
+                <button 
+                  className="btn-submit" 
+                  style={{ backgroundColor: '#dc2626', border: 'none' }}
+                  onClick={confirmDelete}
                 >
-                  Hủy
-                </button>
-                <button
-                  className="btn-submit"
-                  onClick={handleSubmitFeedback}
-                  disabled={!selectedLesson || submitting}
-                >
-                  {submitting ? 'Đang gửi...' : 'Gửi phản hồi'}
+                  Xóa ngay
                 </button>
               </div>
             </div>
           </div>
         )}
+
       </main>
       <Footer />
     </div>

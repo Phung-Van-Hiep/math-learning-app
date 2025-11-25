@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import quizService from '../services/quizService'; // Đảm bảo bạn đã có file service này
 import './QuizManagement.css';
-
+import { toast } from 'react-toastify';
 const QuizManagement = ({ lesson, onClose }) => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   // Form state cho Quiz Info
   const [quizData, setQuizData] = useState({
     title: '',
     description: '',
     duration: 15,
-    passing_score: 60,
+    passing_score: 50,
     is_active: true,
     shuffle_questions: false,
     show_answers: true,
@@ -45,6 +45,7 @@ const QuizManagement = ({ lesson, onClose }) => {
       }
     } catch (error) {
       console.error("Error fetching quiz", error);
+      toast.error("Không thể tải thông tin bài kiểm tra");
     } finally {
       setLoading(false);
     }
@@ -54,27 +55,27 @@ const QuizManagement = ({ lesson, onClose }) => {
     try {
       setLoading(true);
       const payload = { ...quizData, lesson_id: lesson.id };
-      
+
       if (quiz) {
         // Update
         await quizService.updateQuiz(quiz.id, payload);
-        alert('Cập nhật thông tin bài kiểm tra thành công!');
+        toast.success('Cập nhật bài kiểm tra thành công!');
       } else {
         // Create
         const newQuiz = await quizService.createQuiz(payload);
         setQuiz(newQuiz);
-        alert('Tạo bài kiểm tra thành công! Hãy thêm câu hỏi.');
+        toast.success('Tạo bài kiểm tra thành công! Hãy thêm câu hỏi.');
       }
     } catch (error) {
       console.error(error);
-      alert('Lỗi khi lưu bài kiểm tra');
+      toast.error('Lỗi khi lưu bài kiểm tra');
     } finally {
       setLoading(false);
     }
   };
 
   // --- Logic quản lý câu hỏi (Local State trước khi Save Quiz) ---
-  
+
   const handleAddQuestion = () => {
     setEditingQuestion({
       id: Date.now(), // Temp ID
@@ -94,8 +95,8 @@ const QuizManagement = ({ lesson, onClose }) => {
 
   const handleSaveQuestion = () => {
     // Validate
-    if (!editingQuestion.question_text) return alert("Nhập nội dung câu hỏi");
-    if (!editingQuestion.answers.some(a => a.is_correct)) return alert("Chọn ít nhất 1 đáp án đúng");
+    if (!editingQuestion.question_text) return toast.warn("Vui lòng nhập nội dung câu hỏi");
+    if (!editingQuestion.answers.some(a => a.is_correct)) return toast.warn("Vui lòng chọn ít nhất 1 đáp án đúng");
 
     setQuizData(prev => {
       const existingIdx = prev.questions.findIndex(q => q.id === editingQuestion.id);
@@ -110,24 +111,36 @@ const QuizManagement = ({ lesson, onClose }) => {
 
     setShowQuestionForm(false);
     setEditingQuestion(null);
+    toast.info("Đã lưu tạm câu hỏi. Nhớ bấm 'Lưu toàn bộ' nhé!");
     // Lưu ý: UX tốt hơn là nên gọi API update quiz ngay tại đây hoặc có nút "Lưu tất cả"
   };
 
   const updateAnswer = (idx, field, value) => {
     const newAnswers = [...editingQuestion.answers];
     newAnswers[idx] = { ...newAnswers[idx], [field]: value };
-    
+
     // Nếu là trắc nghiệm 1 đáp án, khi chọn đúng thì các cái khác thành sai
-    if (field === 'is_correct' && value === true ) {
-       // Logic tùy chỉnh nếu muốn hỗ trợ nhiều đáp án đúng hay không
-       newAnswers.forEach((a, i) => { if (i !== idx) a.is_correct = false; });
+    if (field === 'is_correct' && value === true) {
+      // Logic tùy chỉnh nếu muốn hỗ trợ nhiều đáp án đúng hay không
+      newAnswers.forEach((a, i) => { if (i !== idx) a.is_correct = false; });
     }
-    
+
     setEditingQuestion(prev => ({ ...prev, answers: newAnswers }));
   };
 
   if (loading) return <div>Đang tải...</div>;
-
+  const mapQuestionType = (type) => {
+  switch (type) {
+    case "multiple_choices":
+      return "Trắc nghiệm";
+    case "true_false":
+      return "Đúng / Sai";
+    case "short_answer":
+      return "Tự luận";
+    default:
+      return type;
+  }
+};
   return (
     <div className="quiz-management-modal">
       <div className="quiz-mgmt-container">
@@ -139,26 +152,39 @@ const QuizManagement = ({ lesson, onClose }) => {
         <div className="quiz-mgmt-body">
           {/* Phần 1: Cấu hình chung */}
           <div className="section-config">
-            <h3>Cấu hình chung</h3>
             <div className="form-row">
-              <input 
-                type="text" placeholder="Tên bài kiểm tra" 
-                value={quizData.title} 
-                onChange={e => setQuizData({...quizData, title: e.target.value})}
-              />
-              <input 
-                type="number" placeholder="Thời gian (phút)" 
-                value={quizData.duration}
-                onChange={e => setQuizData({...quizData, duration: parseInt(e.target.value)})}
-              />
-              <input 
-                type="number" placeholder="Điểm đạt (%)" 
-                value={quizData.passing_score}
-                onChange={e => setQuizData({...quizData, passing_score: parseInt(e.target.value)})}
-              />
+              <div className="quiz-input-group">
+                <label>Tên bài kiểm tra</label>
+                <input
+                  type="text"
+                  value={quizData.title}
+                  onChange={e => setQuizData({ ...quizData, title: e.target.value })}
+                  placeholder="Nhập tên bài kiểm tra"
+                />
+              </div>
+
+              <div className="quiz-input-group">
+                <label>Thời gian làm bài (phút)</label>
+                <input
+                  type="number"
+                  value={quizData.duration}
+                  onChange={e => setQuizData({ ...quizData, duration: parseInt(e.target.value) })}
+                  placeholder="Nhập số phút"
+                />
+              </div>
+
+              <div className="quiz-input-group">
+                <label>Điểm đạt (Passing Score)</label>
+                <input
+                  type="number"
+                  value={quizData.passing_score}
+                  onChange={e => setQuizData({ ...quizData, passing_score: parseInt(e.target.value) })}
+                  placeholder="Điểm để qua bài kiểm tra"
+                />
+              </div>
             </div>
             <button className="btn-primary" onClick={handleSaveQuizInfo}>
-              {quiz ? 'Cập nhật cấu hình' : 'Tạo bài kiểm tra'}
+              {quiz ? 'Cập nhật bài kiểm tra' : 'Tạo bài kiểm tra'}
             </button>
           </div>
 
@@ -176,7 +202,7 @@ const QuizManagement = ({ lesson, onClose }) => {
                 {quizData.questions.map((q, idx) => (
                   <div key={idx} className="question-item-preview">
                     <span>Câu {idx + 1}: {q.question_text}</span>
-                    <span className="badge">{q.question_type}</span>
+                    <span className="badge">{mapQuestionType(q.question_type)}</span>
                     <button onClick={() => { setEditingQuestion(q); setShowQuestionForm(true); }}>Sửa</button>
                   </div>
                 ))}
@@ -186,44 +212,44 @@ const QuizManagement = ({ lesson, onClose }) => {
               {showQuestionForm && editingQuestion && (
                 <div className="question-editor">
                   <h4>Soạn thảo câu hỏi</h4>
-                  <textarea 
+                  <textarea
                     placeholder="Nội dung câu hỏi..."
                     value={editingQuestion.question_text}
-                    onChange={e => setEditingQuestion({...editingQuestion, question_text: e.target.value})}
+                    onChange={e => setEditingQuestion({ ...editingQuestion, question_text: e.target.value })}
                   />
-                  
+
                   <div className="answers-editor">
                     {editingQuestion.answers.map((ans, idx) => (
                       <div key={idx} className="answer-row">
-                        <input 
-                          type="radio" 
-                          name="correct_ans" 
+                        <input
+                          type="radio"
+                          name="correct_ans"
                           checked={ans.is_correct}
                           onChange={e => updateAnswer(idx, 'is_correct', e.target.checked)}
                         />
-                        <input 
-                          type="text" 
-                          placeholder={`Đáp án ${String.fromCharCode(65+idx)}`}
+                        <input
+                          type="text"
+                          placeholder={`Đáp án ${String.fromCharCode(65 + idx)}`}
                           value={ans.answer_text}
                           onChange={e => updateAnswer(idx, 'answer_text', e.target.value)}
                         />
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="editor-actions">
                     <button onClick={handleSaveQuestion}>Lưu câu hỏi này</button>
                     <button onClick={() => setShowQuestionForm(false)}>Hủy</button>
                   </div>
                 </div>
               )}
-              
+
               {/* Nút lưu cuối cùng để đẩy toàn bộ câu hỏi lên Server */}
               <div className="final-save">
-                 <button className="btn-primary large" onClick={handleSaveQuizInfo}>
-                    LƯU TOÀN BỘ CÂU HỎI
-                 </button>
-                 <p><small>Lưu ý: Bạn cần nhấn nút này để cập nhật danh sách câu hỏi mới nhất vào hệ thống.</small></p>
+                <button className="btn-primary large" onClick={handleSaveQuizInfo}>
+                  LƯU TOÀN BỘ CÂU HỎI
+                </button>
+                <p><small>Lưu ý: Bạn cần nhấn nút này để cập nhật danh sách câu hỏi mới nhất vào hệ thống.</small></p>
               </div>
             </div>
           )}

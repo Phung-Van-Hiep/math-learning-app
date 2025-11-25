@@ -90,23 +90,32 @@ class QuizService:
             return None
 
         # 1. Cập nhật thông tin cơ bản (Title, Duration...)
-        update_data = quiz_data.model_dump(exclude_unset=True, exclude={'questions'}) # Loại bỏ questions để không lỗi setattr
+        # Loại bỏ 'questions' khỏi dict để tránh lỗi khi setattr
+        update_data = quiz_data.model_dump(exclude_unset=True, exclude={'questions'}) 
         for field, value in update_data.items():
             setattr(quiz, field, value)
 
         quiz.updated_at = datetime.utcnow()
 
-        # 2. XỬ LÝ CẬP NHẬT CÂU HỎI (Logic mới thêm)
+        # 2. XỬ LÝ CẬP NHẬT CÂU HỎI (Logic sửa lỗi FK)
+        # Ngay cả khi bạn chỉ sửa thời gian, nếu Frontend gửi kèm questions, ta vẫn thực hiện logic này
+        # để đảm bảo dữ liệu đồng bộ nhất.
         if quiz_data.questions is not None:
-            # Cách đơn giản nhất: Xóa hết câu hỏi cũ và tạo lại câu hỏi mới
-            # (Lưu ý: Cách này sẽ làm mất lịch sử câu hỏi cũ nếu cần tracking chi tiết, 
-            # nhưng phù hợp để sửa lỗi nhanh hiện tại)
+            # Bước A: Lấy ID của các câu hỏi cũ đang có trong bài kiểm tra này
+            existing_questions = db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).all()
+            existing_question_ids = [q.id for q in existing_questions]
+
+            # Bước B: Xóa tất cả ĐÁP ÁN thuộc về các câu hỏi cũ này trước
+            # (Đây là bước quan trọng để fix lỗi "FK constraint")
+            if existing_question_ids:
+                db.query(QuizAnswer).filter(
+                    QuizAnswer.question_id.in_(existing_question_ids)
+                ).delete(synchronize_session=False)
+
+            # Bước C: Sau khi xóa hết đáp án, giờ có thể xóa CÂU HỎI an toàn
+            db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).delete(synchronize_session=False)
             
-            # Xóa câu hỏi cũ (Answers sẽ tự động xóa theo nếu có setup cascade delete trong Database, 
-            # nếu không thì phải xóa tay Answers trước)
-            db.query(QuizQuestion).filter(QuizQuestion.quiz_id == quiz_id).delete()
-            
-            # Tạo lại câu hỏi mới từ danh sách gửi lên
+            # Bước D: Tạo lại câu hỏi và đáp án mới từ dữ liệu gửi lên
             for question_data in quiz_data.questions:
                 question = QuizQuestion(
                     quiz_id=quiz.id,
@@ -117,7 +126,7 @@ class QuizService:
                     image_url=question_data.image_url
                 )
                 db.add(question)
-                db.flush()  # Để lấy ID câu hỏi
+                db.flush()  # Để lấy ID câu hỏi mới tạo
 
                 # Tạo câu trả lời cho câu hỏi này
                 for answer_data in question_data.answers:

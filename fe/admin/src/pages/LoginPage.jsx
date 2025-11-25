@@ -32,7 +32,7 @@ const LoginPage = () => {
         setError(result.error);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      toast.error('Lỗi kết nối server hoặc lỗi không xác định');
     } finally {
       setLoading(false);
     }

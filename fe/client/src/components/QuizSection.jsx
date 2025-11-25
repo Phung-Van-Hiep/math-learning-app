@@ -3,7 +3,7 @@ import QuizQuestion from './QuizQuestion';
 import QuizResults from './QuizResults';
 import quizService from '../services/quizService';
 import './QuizSection.css';
-
+import { toast } from 'react-toastify';
 const QuizSection = ({ lessonId, onQuizComplete }) => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
   const [quizResults, setQuizResults] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [previousAttempts, setPreviousAttempts] = useState([]);
-
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   // Load quiz and previous attempts
   useEffect(() => {
     loadQuiz();
@@ -92,21 +92,23 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
     }
   };
 
-  const handleSubmit = async () => {
-    // Check if all questions are answered
-    const unansweredQuestions = quiz.questions.filter(
+  const handlePreSubmit = () => {
+    const unansweredCount = quiz.questions.filter(
       q => !answers[q.id] || answers[q.id] === ''
-    );
+    ).length;
 
-    if (unansweredQuestions.length > 0) {
-      const confirm = window.confirm(
-        `You have ${unansweredQuestions.length} unanswered question(s). Do you want to submit anyway?`
-      );
-      if (!confirm) return;
+    if (unansweredCount > 0) {
+      // Nếu còn câu chưa làm -> Mở Modal
+      setShowConfirmModal(true);
+    } else {
+      // Nếu làm hết rồi -> Nộp luôn
+      submitQuizData();
     }
-
+  };
+  const submitQuizData = async () => {
     try {
       setIsSubmitting(true);
+      setShowConfirmModal(false); // Đóng modal nếu đang mở
 
       const submitData = {
         answers: answers,
@@ -117,18 +119,17 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
       setQuizResults(results);
       setShowResults(true);
       setIsStarted(false);
-      // Notify parent component
+      
       if (onQuizComplete) {
         onQuizComplete(results);
       }
     } catch (err) {
       console.error('Error submitting quiz:', err);
-      alert('Failed to submit quiz. Please try again.');
+      toast.error('Không nộp được bài kiểm tra. Vui lòng thử lại');
     } finally {
       setIsSubmitting(false);
     }
   };
-
   const handleRetake = () => {
     setAnswers({});
     setCurrentQuestionIndex(0);
@@ -205,7 +206,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
           <div className="info-card">
             <span className="icon">🎯</span>
             <span className="label">Điểm đạt</span>
-            <span className="value">{quiz.passing_score}%</span>
+            <span className="value">{quiz.passing_score}</span>
           </div>
         </div>
 
@@ -219,6 +220,16 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
         <button className="btn-start-quiz" onClick={handleStartQuiz}>
           Bắt đầu làm bài ►
         </button>
+      </div>
+    );
+  }
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+    return (
+      <div className="quiz-section error">
+        <div className="error-icon">📭</div>
+        <h3>Bài kiểm tra chưa có câu hỏi</h3>
+        <p>Vui lòng liên hệ giáo viên hoặc quay lại sau.</p>
+        <button className="btn btn-secondary" onClick={handleRetake}>Quay lại</button>
       </div>
     );
   }
@@ -243,7 +254,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
             📊 {getAnsweredCount()} / {quiz.questions.length}
           </div>
           <div className="quiz-meta-item">
-            🎯 Pass: {quiz.passing_score}%
+            🎯 Yêu cầu cần đạt được: {quiz.passing_score} điểm
           </div>
         </div>
       </div>
@@ -288,7 +299,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
           onClick={handlePreviousQuestion}
           disabled={currentQuestionIndex === 0}
         >
-          ← Previous
+          ← Câu trước
         </button>
 
         <div className="nav-center">
@@ -302,15 +313,15 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
             className="btn btn-primary"
             onClick={handleNextQuestion}
           >
-            Next →
+            Câu sau →
           </button>
         ) : (
           <button
             className="btn btn-success"
-            onClick={handleSubmit}
+            onClick={handlePreSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
+            {isSubmitting ? 'Chờ nộp...' : 'Nộp bài'}
           </button>
         )}
       </div>
@@ -320,8 +331,37 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
         <div className="previous-attempts-info">
           <p>
             📊 You've attempted this quiz {previousAttempts.length} time(s).
-            Best score: {Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}%
+            Best score: {Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}
           </p>
+        </div>
+      )}
+      {showConfirmModal && (
+        <div className="quiz-modal-overlay">
+          <div className="quiz-modal">
+            <div className="quiz-modal-header">
+              <h3>⚠️ Xác nhận nộp bài</h3>
+            </div>
+            <div className="quiz-modal-body">
+              <p>
+                Bạn vẫn còn <strong>{quiz.questions.filter(q => !answers[q.id]).length}</strong> câu hỏi chưa trả lời.
+              </p>
+              <p>Bạn có chắc chắn muốn nộp bài ngay bây giờ không?</p>
+            </div>
+            <div className="quiz-modal-footer">
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Xem lại
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={submitQuizData}
+              >
+                Nộp bài luôn
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
