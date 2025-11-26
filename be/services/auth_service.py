@@ -85,14 +85,14 @@ class AuthService:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password"
+                detail="Tài khoản hoặc mật khẩu không đúng"
             )
 
         # Verify password
         if not verify_password(credentials.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username or password"
+                detail="Tài khoản hoặc mật khẩu không đúng"
             )
 
         # Check if user is active

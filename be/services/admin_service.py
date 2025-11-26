@@ -110,6 +110,6 @@ class AdminService:
     def change_admin_password(db: Session, admin_id: int, password_data: PasswordChange):
         admin = db.query(User).filter(User.id == admin_id).first()
         if not admin or not verify_password(password_data.current_password, admin.hashed_password):
-            raise HTTPException(status_code=400, detail="Current password is incorrect")
+            raise HTTPException(status_code=400, detail="Mật khâu hiện tại không đúng")
         admin.hashed_password = get_password_hash(password_data.new_password)
         db.commit()

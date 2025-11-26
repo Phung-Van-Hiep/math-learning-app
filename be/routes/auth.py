@@ -168,18 +168,18 @@ async def change_password(
     if not AuthService.verify_password(password_data.current_password, current_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect"
+            detail="Mật khẩu hiện tại không đúng"
         )
 
     # Validate new password
     if len(password_data.new_password) < 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="New password must be at least 6 characters long"
+            detail="Mật khẩu mới phải dài ít nhất 6 ký tự"
         )
 
     # Hash and update password
     current_user.hashed_password = AuthService.get_password_hash(password_data.new_password)
     db.commit()
 
-    return {"message": "Password changed successfully"}
+    return {"message": "Mật khẩu đã được thay đổi thành công"}
