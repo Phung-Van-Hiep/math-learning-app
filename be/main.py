@@ -48,9 +48,14 @@ app = FastAPI(
 )
 
 # CORS middleware
+origins = [
+    "http://localhost:5173", # Cho phép local chạy
+    "https://ten-du-an-cua-ban.vercel.app", # 👇 Sửa thành link Vercel thật của bạn sau khi deploy xong
+    "*" # Tạm thời cho phép tất cả để tránh lỗi khi test
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.get_allowed_origins(),
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
