@@ -458,8 +458,29 @@
   justify-content: flex-end;
   gap: 12px;
   border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+.quiz-modal-footer .btn {
+  justify-self: auto; /* Reset thuộc tính Grid */
+  min-width: 100px; /* Đảm bảo nút không bị co quá bé */
 }
 
+
+@media (max-width: 480px) {
+  .quiz-modal-footer {
+    justify-content: stretch; /* Kéo dãn khung */
+    padding: 12px;
+  }
+  
+  .quiz-modal-footer .btn {
+    width: 100%; /* Nút full chiều ngang cho đẹp và dễ bấm trên điện thoại */
+    justify-content: center;
+    margin: 0; /* Reset margin */
+  }
+  
+  /* Đảo thứ tự hiển thị nếu muốn nút Nộp bài lên trên (tuỳ chọn) */
+  /* .quiz-modal-footer { flex-direction: column-reverse; } */
+}
 /* Responsive cho Mobile */
 @media (max-width: 640px) {
   .quiz-info-grid {

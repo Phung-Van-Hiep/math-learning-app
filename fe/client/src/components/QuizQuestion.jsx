@@ -42,7 +42,7 @@ const QuizQuestion = ({ question, questionNumber, selectedAnswer, onAnswerChange
   return (
     <div className="quiz-question">
       <div className="question-header">
-        <span className="question-number">Question {questionNumber}</span>
+        <span className="question-number">Câu hỏi {questionNumber}</span>
         <span className="question-points">{points} {points === 1 ? 'point' : 'points'}</span>
       </div>
 

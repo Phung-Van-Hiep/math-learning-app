@@ -304,7 +304,7 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
 
         <div className="nav-center">
           <span className="question-counter">
-            Question {currentQuestionIndex + 1} of {quiz.questions.length}
+            Câu hỏi {currentQuestionIndex + 1} trong tổng số {quiz.questions.length} hỏi
           </span>
         </div>
 
@@ -330,8 +330,8 @@ const QuizSection = ({ lessonId, onQuizComplete }) => {
       {previousAttempts.length > 0 && (
         <div className="previous-attempts-info">
           <p>
-            📊 You've attempted this quiz {previousAttempts.length} time(s).
-            Best score: {Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}
+            📊 Bạn đã thực hiện bài kiểm tra {previousAttempts.length} lần.
+            Số điểm cao nhất: {Math.max(...previousAttempts.map(a => a.score)).toFixed(1)}
           </p>
         </div>
       )}
