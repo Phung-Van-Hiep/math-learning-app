@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion'; // Import animation
 import './LoginPage.css';
 
@@ -9,6 +10,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,6 +104,14 @@ const LoginPage = () => {
               {loading ? <span className="spinner-small"></span> : 'Đăng nhập ngay →'}
             </motion.button>
           </form>
+          <div className="register-prompt">
+            <p>
+              Bạn chưa có tài khoản?{' '}
+              <Link to="/register" className="register-link">
+                Đăng ký tài khoản
+              </Link>
+            </p>
+          </div>
         </div>
       </motion.div>
     </div>

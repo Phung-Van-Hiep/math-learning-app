@@ -149,5 +149,26 @@
   animation: spin 1s ease-in-out infinite;
   display: inline-block;
 }
+.register-prompt {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #4b5563; /* Màu xám đậm dễ đọc */
+  padding-top: 20px;
+  border-top: 1px solid rgba(226, 232, 240, 0.6); /* Đường kẻ mờ ngăn cách */
+}
+
+.register-link {
+  color: #2563eb; /* Màu xanh giống nút Login */
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.register-link:hover {
+  color: #1e40af; /* Màu đậm hơn khi hover */
+  text-decoration: underline;
+}
 
 @keyframes spin { to { transform: rotate(360deg); } }

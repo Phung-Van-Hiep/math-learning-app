@@ -7,6 +7,7 @@ import ProgressDashboard from './pages/ProgressDashboard';
 import ResultsPage from './pages/ResultsPage';
 import FeedbackPage from './pages/FeedbackPage';
 import SettingsPage from './pages/SettingsPage';
+import RegisterPage from './pages/RegisterPage';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -41,6 +42,7 @@ function AppRoutes() {
         path="/login"
         element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
       />
+      <Route path="/register" element={<RegisterPage />} />
       <Route
         path="/"
         element={
